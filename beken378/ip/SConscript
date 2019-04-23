@@ -1,0 +1,147 @@
+from building import *
+
+cwd  = GetCurrentDir()
+
+src = []
+src += ["common/co_dlist.c"]
+src += ["common/co_list.c"]
+src += ["common/co_math.c"]
+src += ["common/co_pool.c"]
+src += ["common/co_ring.c"]
+src += ["ke/ke_env.c"]
+src += ["ke/ke_event.c"]
+src += ["ke/ke_msg.c"]
+src += ["ke/ke_queue.c"]
+src += ["ke/ke_task.c"]
+src += ["ke/ke_timer.c"]
+src += ["lmac/src/chan/chan.c"]
+src += ["lmac/src/hal/hal_desc.c"]
+src += ["lmac/src/hal/hal_dma.c"]
+src += ["lmac/src/hal/hal_machw.c"]
+src += ["lmac/src/hal/hal_mib.c"]
+src += ["lmac/src/mm/mm.c"]
+src += ["lmac/src/mm/mm_bcn.c"]
+src += ["lmac/src/mm/mm_task.c"]
+src += ["lmac/src/mm/mm_timer.c"]
+src += ["lmac/src/p2p/p2p.c"]
+src += ["lmac/src/ps/ps.c"]
+src += ["lmac/src/rd/rd.c"]
+src += ["lmac/src/rwnx/rwnx.c"]
+src += ["lmac/src/rx/rx_swdesc.c"]
+src += ["lmac/src/rx/rxl/rxl_cntrl.c"]
+src += ["lmac/src/rx/rxl/rxl_hwdesc.c"]
+src += ["lmac/src/scan/scan.c"]
+src += ["lmac/src/scan/scan_shared.c"]
+src += ["lmac/src/scan/scan_task.c"]
+src += ["lmac/src/sta/sta_mgmt.c"]
+src += ["lmac/src/td/td.c"]
+src += ["lmac/src/tdls/tdls.c"]
+src += ["lmac/src/tdls/tdls_task.c"]
+src += ["lmac/src/tpc/tpc.c"]
+src += ["lmac/src/tx/tx_swdesc.c"]
+src += ["lmac/src/tx/txl/txl_buffer.c"]
+src += ["lmac/src/tx/txl/txl_buffer_shared.c"]
+src += ["lmac/src/tx/txl/txl_cfm.c"]
+src += ["lmac/src/tx/txl/txl_cntrl.c"]
+src += ["lmac/src/tx/txl/txl_frame.c"]
+src += ["lmac/src/tx/txl/txl_frame_shared.c"]
+src += ["lmac/src/tx/txl/txl_hwdesc.c"]
+src += ["lmac/src/vif/vif_mgmt.c"]
+src += ["mac/mac.c"]
+src += ["mac/mac_ie.c"]
+src += ["umac/src/apm/apm.c"]
+src += ["umac/src/apm/apm_task.c"]
+src += ["umac/src/bam/bam.c"]
+src += ["umac/src/bam/bam_task.c"]
+src += ["umac/src/me/me.c"]
+src += ["umac/src/me/me_mgmtframe.c"]
+src += ["umac/src/me/me_mic.c"]
+src += ["umac/src/me/me_task.c"]
+src += ["umac/src/me/me_utils.c"]
+src += ["umac/src/rc/rc.c"]
+src += ["umac/src/rc/rc_basic.c"]
+src += ["umac/src/rxu/rxu_cntrl.c"]
+src += ["umac/src/scanu/scanu.c"]
+src += ["umac/src/scanu/scanu_shared.c"]
+src += ["umac/src/scanu/scanu_task.c"]
+src += ["umac/src/sm/sm.c"]
+src += ["umac/src/sm/sm_task.c"]
+src += ["umac/src/txu/txu_cntrl.c"]
+
+path = []
+path += [cwd + '/common']
+path += [cwd + '/ke']
+path += [cwd + '/mac']
+path += [cwd + '/lmac/src/hal']
+path += [cwd + '/lmac/src/mm']
+path += [cwd + '/lmac/src/ps']
+path += [cwd + '/lmac/src/rd']
+path += [cwd + '/lmac/src/rx']
+path += [cwd + '/lmac/src/scan']
+path += [cwd + '/lmac/src/sta']
+path += [cwd + '/lmac/src/tx']
+path += [cwd + '/lmac/src/vif']
+path += [cwd + '/lmac/src/rx/rxl']
+path += [cwd + '/lmac/src/tx/txl']
+path += [cwd + '/lmac/src/rwnx']
+path += [cwd + '/lmac/src/p2p']
+path += [cwd + '/lmac/src/chan']
+path += [cwd + '/lmac/src/td']
+path += [cwd + '/lmac/src/tpc']
+path += [cwd + '/lmac/src/tdls']
+path += [cwd + '/umac/src/bam']
+path += [cwd + '/umac/src/llc']
+path += [cwd + '/umac/src/me']
+path += [cwd + '/umac/src/rxu']
+path += [cwd + '/umac/src/scanu']
+path += [cwd + '/umac/src/sm']
+path += [cwd + '/umac/src/txu']
+path += [cwd + '/umac/src/apm']
+path += [cwd + '/umac/src/rc']
+path += [cwd + '/umac/src/mesh']
+
+sys_config = os.path.join(cwd, '..', 'app', 'config', 'sys_config.h')
+options = LocalOptions(sys_config)
+
+wifi_lib_name = 'ip'
+
+if (GetLocalDepend(options, 'CFG_SOC_NAME') == 'SOC_BK7231'):
+    wifi_lib_name += '_7231'
+elif (GetLocalDepend(options, 'CFG_SOC_NAME') == 'SOC_BK7231U'):
+    wifi_lib_name += '_7231u'
+elif (GetLocalDepend(options, 'CFG_SOC_NAME') == 'SOC_BK7221U'):
+    wifi_lib_name += '_7221u'
+else:
+	wifi_lib_name += '_unknown'
+
+"""it seems that CFG_USE_MCU_PS and CFG_USE_DEEP_PS not used in rwnx libarary
+if (GetLocalDepend(options, 'CFG_USE_MCU_PS') == 1):
+    wifi_lib_name += '_mcu'
+
+if (GetLocalDepend(options, 'CFG_USE_DEEP_PS') == 1):
+    wifi_lib_name += '_deep'
+"""
+
+if (GetLocalDepend(options, 'CFG_USE_BLE_PS') == 1):
+    wifi_lib_name += '_ble'
+
+if (GetLocalDepend(options, 'CFG_USE_STA_PS') == 1):
+    wifi_lib_name += '_sta'
+
+if (GetLocalDepend(options, 'CFG_USE_AP_PS') == 1):
+    wifi_lib_name += '_ap'
+
+print 'using rwnx_wifi: lib' + wifi_lib_name + '.a'
+
+libs = [wifi_lib_name]
+libpath = [cwd + '/']
+
+cppdefines = []
+
+group_use_lib = DefineGroup('beken_ip_lib', [], depend = [''], CPPPATH = path, CPPDEFINES = cppdefines, LIBS = libs, LIBPATH = libpath)
+
+group_build_lib = DefineGroup('beken_ip', src, depend = ['BUILD_LIB'], CPPPATH = path, CPPDEFINES = cppdefines, LIBS = libs, LIBPATH = libpath)
+
+group = group_use_lib + group_build_lib
+
+Return('group')
