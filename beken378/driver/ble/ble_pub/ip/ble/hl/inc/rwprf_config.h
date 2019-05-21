@@ -72,7 +72,7 @@
 //  <e> CFG_PRF_BTL
 //  <i> BTL profile Locator Role
 //  </e>
-#if ( 1 )
+#if ( 0 )
 #define CFG_PRF_BTL
 #endif
 
@@ -83,13 +83,26 @@
 #define CFG_PRF_SN
 #endif
 
-//  <e> CFG_PRF_AYLA
-//  <i> AYLA profile Locator Role
+//  <e> CFG_PRF_AYLA_GEN
+//  <i> AYLA_GEN profile Locator Role
 //  </e>
-#if ( 0 )
-#define CFG_PRF_AYLA
+#if ( 1 )
+#define CFG_PRF_AYLA_GEN
 #endif
 
+//  <e> CFG_PRF_AYLA_WIFI
+//  <i> AYLA_WIFI profile Locator Role
+//  </e>
+#if ( 1 )
+#define CFG_PRF_AYLA_WIFI
+#endif
+
+//  <e> CFG_PRF_AYLA_CONN
+//  <i> AYLA_CONN profile Locator Role
+//  </e>
+#if ( 1 )
+#define CFG_PRF_AYLA_CONN
+#endif
 
 ///HID Device Role
 
@@ -223,12 +236,26 @@
 #define BLE_SN_SERVER        0
 #endif // defined(CFG_PRF_SN)
 
-///AYLA Profile Locator role
-#if defined(CFG_PRF_AYLA)
-#define BLE_AYLA_SERVER        1
+///AYLA_GEN Profile Locator role
+#if defined(CFG_PRF_AYLA_GEN)
+#define BLE_AYLA_GEN_SERVER        1
 #else
-#define BLE_AYLA_SERVER        0
-#endif // defined(CFG_PRF_AYLA)
+#define BLE_AYLA_GEN_SERVER        0
+#endif // defined(CFG_PRF_AYLA_GEN)
+
+///AYLA_WIFI Profile Locator role
+#if defined(CFG_PRF_AYLA_WIFI)
+#define BLE_AYLA_WIFI_SERVER        1
+#else
+#define BLE_AYLA_WIFI_SERVER        0
+#endif // defined(CFG_PRF_AYLA_WIFI)
+
+///AYLA_CONN Profile Locator role
+#if defined(CFG_PRF_AYLA_CONN)
+#define BLE_AYLA_CONN_SERVER        1
+#else
+#define BLE_AYLA_CONN_SERVER        0
+#endif // defined(CFG_PRF_AYLA_CONN)
 
 
 /// Proximity Profile Monitor Role
@@ -547,7 +574,8 @@
         || BLE_PAS_SERVER || BLE_IPS_SERVER || BLE_ENV_SERVER || BLE_WSC_SERVER \
 		|| BLE_UDS_SERVER || BLE_BCS_SERVER || BLE_WPT_SERVER || BLE_PLX_SERVER \
 		|| BLE_FFF0_SERVER || BLE_FFE0_SERVER || BLE_FEB3_SERVER || BLE_MS_SERVER \
-		|| BLE_BTL_SERVER || BLE_SN_SERVER || BLE_AYLA_SERVER)
+		|| BLE_BTL_SERVER || BLE_SN_SERVER || BLE_AYLA_GEN_SERVER || BLE_AYLA_WIFI_SERVER \
+		|| BLE_AYLA_CONN_SERVER)
 #define BLE_SERVER_PRF          1
 #else
 #define BLE_SERVER_PRF          0

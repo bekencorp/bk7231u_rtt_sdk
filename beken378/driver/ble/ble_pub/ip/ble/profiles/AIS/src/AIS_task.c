@@ -423,7 +423,7 @@ static int gattc_read_req_ind_handler(kernel_msg_id_t const msgid, struct gattc_
 					cfm->handle = param->handle;
 					cfm->status = status;
 					cfm->length = feb3s_env->fed4_len;
-					memcpy(cfm->value,feb3s_env->fed4_value,feb3s_env->fed5_len);
+					memcpy(cfm->value,feb3s_env->fed4_value,feb3s_env->fed4_len);
 					kernel_msg_send(cfm);
 			}
 			else if(att_idx == FEB3S_IDX_FED5_VAL_VALUE)

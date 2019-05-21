@@ -250,6 +250,7 @@
 #define BEKEN_USING_WLAN_STA
 #define RT_USING_CPU_FFS
 #define BEKEN_USING_AUTO_POWERSAVE
+#define RT_USING_BLE
 
 /* Application Samples Config */
 

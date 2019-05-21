@@ -1131,6 +1131,7 @@ void wpa_supplicant_req_scan(struct wpa_supplicant *wpa_s, int sec, int usec)
     mcu_prevent_set(MCU_PS_CONNECT);
 #if CFG_USE_MCU_PS
     mcu_ps_machw_reset();
+    mcu_ps_tsf_cal(0);
 #endif
 #if CFG_USE_BLE_PS
     rf_not_share_for_ble();

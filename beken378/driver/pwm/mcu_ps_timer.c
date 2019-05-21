@@ -8,6 +8,8 @@
 #include "icu_pub.h"
 #include "fake_clock_pub.h"
 #include "target_util_pub.h"
+#include "wlan_ui_pub.h"
+#include "intc_pub.h"
 
 void ps_pwm0_enable(void)
 {
@@ -64,6 +66,8 @@ void ps_pwm0_reconfig(UINT32 period, UINT8 clk_mux)
     delay(1);
     //reenable
     ps_pwm0_enable();
+    
+    REG_WRITE(PWM_INTERRUPT_STATUS,0x1);
 #else
     ps_pwm0_disable();
     //new
@@ -85,6 +89,11 @@ void ps_pwm0_suspend_tick(UINT32 period)
 void ps_pwm0_resume_tick(void)
 {
     ps_pwm0_reconfig(fclk_cal_endvalue(PWM_CLK_26M), PWM_MUX_PCLK);
+}
+
+UINT32 ps_pwm0_int_status(void )
+{
+    return ((REG_READ(ICU_INT_STATUS) & (CO_BIT(IRQ_PWM)))&& (REG_READ(PWM_INTERRUPT_STATUS) & 0x1));
 }
 
 #if (CFG_SOC_NAME != SOC_BK7231)

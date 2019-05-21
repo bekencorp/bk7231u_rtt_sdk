@@ -1898,6 +1898,8 @@ void manual_cal_set_xtal(UINT32 xtal)
     UINT32 param = xtal;
     if(xtal > PARAM_XTALH_CTUNE_MASK)
         param = PARAM_XTALH_CTUNE_MASK;
+
+    os_printf("xtal_cali:%d\r\n", xtal);
     
     sddev_control(SCTRL_DEV_NAME, CMD_SCTRL_SET_XTALH_CTUNE, &param);
     g_xtal = param;

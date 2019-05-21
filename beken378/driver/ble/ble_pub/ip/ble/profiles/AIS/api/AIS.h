@@ -33,7 +33,6 @@
 #if (BLE_FEB3_SERVER)
 
 #include "AIS_task.h"
-#include "AIS_pub.h"
 #include "atts.h"
 #include "prf_types.h"
 #include "prf.h"

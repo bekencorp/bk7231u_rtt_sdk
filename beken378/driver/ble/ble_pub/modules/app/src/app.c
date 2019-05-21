@@ -64,9 +64,18 @@
 #include "app_sn.h"                 // Application  Definition
 #endif // (BLE_APP_SN)
 
-#if (BLE_APP_AYLA)
-#include "app_ayla.h"                 // Application  Definition
-#endif // (BLE_APP_AYLA)
+#if (BLE_APP_AYLA_GEN)
+#include "app_ayla_gen.h"                 // Application  Definition
+#endif // (BLE_APP_AYLA_GEN)
+
+#if (BLE_APP_AYLA_WIFI)
+#include "app_ayla_wifi.h"                 // Application  Definition
+#endif // (BLE_APP_AYLA_WIFI)
+
+#if (BLE_APP_AYLA_CONN)
+#include "app_ayla_conn.h"                 // Application  Definition
+#endif // (BLE_APP_AYLA_CONN)
+
 
 #if (BLE_APP_ANCSC)
 #include "app_ancsc.h"                 // Application fff0s Definition
@@ -252,9 +261,17 @@ enum appm_svc_list
 	APPM_SVC_SN,
     #endif // (BLE_APP_SN)
 
-    #if (BLE_APP_AYLA)
-	APPM_SVC_AYLA,
-    #endif // (BLE_APP_AYLA)
+    #if (BLE_APP_AYLA_GEN)
+	APPM_SVC_AYLA_GEN,
+    #endif // (BLE_APP_AYLA_GEN)
+
+    #if (BLE_APP_AYLA_WIFI)
+	APPM_SVC_AYLA_WIFI,
+    #endif // (BLE_APP_AYLA_WIFI)
+
+    #if (BLE_APP_AYLA_CONN)
+	APPM_SVC_AYLA_CONN,
+    #endif // (BLE_APP_AYLA_CONN)
 	
 	#if (BLE_APP_ANCSC)
 	APPM_SVC_ANCSC,
@@ -322,9 +339,17 @@ static const appm_add_svc_func_t appm_add_svc_func_list[APPM_SVC_LIST_STOP] =
     (appm_add_svc_func_t)app_sn_add_sn,
     #endif // (BLE_APP_SN)
 
-    #if (BLE_APP_AYLA)
-    (appm_add_svc_func_t)app_ayla_add_ayla,
-    #endif // (BLE_APP_AYLA)
+    #if (BLE_APP_AYLA_GEN)
+    (appm_add_svc_func_t)app_ayla_gen_add_gen,
+    #endif // (BLE_APP_AYLA_GEN)
+
+    #if (BLE_APP_AYLA_WIFI)
+    (appm_add_svc_func_t)app_ayla_wifi_add_wifi,
+    #endif // (BLE_APP_AYLA_WIFI)
+
+    #if (BLE_APP_AYLA_CONN)
+    (appm_add_svc_func_t)app_ayla_conn_add_conn,
+    #endif // (BLE_APP_AYLA_CONN)
 	
 	#if (BLE_APP_ANCSC)
     (appm_add_svc_func_t)app_ancs_add_ancsc,
@@ -508,9 +533,18 @@ void appm_init()
  		app_sn_init();
     #endif //(BLE_APP_SN)
 
-    #if (BLE_APP_AYLA)
- 		app_ayla_init();
-    #endif //(BLE_APP_AYLA)
+    #if (BLE_APP_AYLA_GEN)
+ 		app_ayla_gen_init();
+    #endif //(BLE_APP_AYLA_GEN)
+
+    #if (BLE_APP_AYLA_WIFI)
+ 		app_ayla_wifi_init();
+    #endif //(BLE_APP_AYLA_WIFI)
+
+    #if (BLE_APP_AYLA_CONN)
+ 		app_ayla_conn_init();
+    #endif //(BLE_APP_AYLA_CONN)
+
 		
 }
 

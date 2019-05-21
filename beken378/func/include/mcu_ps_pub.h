@@ -45,6 +45,9 @@ extern void ps_pwm0_disable(void );
 extern void ps_pwm0_enable(void);
 extern UINT32 ps_timer3_disable(void);
 extern void ps_timer3_enable(UINT32 );
+extern UINT32 ps_pwm0_int_status(void );
+extern UINT32 rtt_update_tick(UINT32 tick);
+
 extern UINT32 ps_timer3_measure_prepare(void);
 extern UINT32 mcu_ps_tsf_cal(UINT64);
 extern UINT32 mcu_ps_machw_cal(void);

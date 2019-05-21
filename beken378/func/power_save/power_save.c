@@ -554,7 +554,7 @@ void power_save_ieee_dtim_wakeup(void)
         }
         else
         {
-            os_printf("errr %d %d\r\n", power_save_if_sleep_first(), ps_keep_timer_period);
+            //os_printf("errr %d %d\r\n", power_save_if_sleep_first(), ps_keep_timer_period);
         }
 
         ke_evt_set(KE_EVT_KE_TIMER_BIT);
@@ -633,38 +633,34 @@ void power_save_me_ps_first_set_state(UINT8 state)
     struct me_set_ps_disable_req *me_ps_ptr;
     os_printf("%s:%d \r\n", __FUNCTION__, __LINE__);
     param_len = sizeof(struct me_set_ps_disable_req);
-    kmsg_dst = (struct ke_msg *)os_malloc(sizeof(struct ke_msg)
-                                          + param_len);
-
-    if(0 == kmsg_dst)
-    {
-        os_printf("%s:%d malloc fail\r\n", __FUNCTION__, __LINE__);
-        return ;
-    }
 
     vif_entry = (VIF_INF_PTR)rwm_mgmt_is_vif_first_used();
     while(vif_entry)
     {
         if(vif_entry->type == VIF_STA && vif_entry->active)
         {
-            break;
+            kmsg_dst = (struct ke_msg *)os_malloc(sizeof(struct ke_msg)
+                                          + param_len);
+
+            if(0 == kmsg_dst)
+            {
+                os_printf("%s:%d malloc fail\r\n", __FUNCTION__, __LINE__);
+                return ;
+            }
+            os_memset(kmsg_dst, 0, (sizeof(struct ke_msg) + param_len));
+            kmsg_dst->id = ME_PS_REQ;
+            kmsg_dst->dest_id = TASK_ME;
+            kmsg_dst->src_id  = TASK_NONE;
+            kmsg_dst->param_len = param_len;
+            me_ps_ptr = (struct me_set_ps_disable_req *)kmsg_dst->param;
+            me_ps_ptr->ps_disable = state;
+            me_ps_ptr->vif_idx = vif_entry->index;
+
+            ke_msg_send(ke_msg2param(kmsg_dst));
         }
         vif_entry = (VIF_INF_PTR)rwm_mgmt_next(vif_entry);
     }
 
-    if (!vif_entry)
-        return;
-
-    os_memset(kmsg_dst, 0, (sizeof(struct ke_msg) + param_len));
-    kmsg_dst->id = ME_PS_REQ;
-    kmsg_dst->dest_id = TASK_ME;
-    kmsg_dst->src_id  = TASK_NONE;
-    kmsg_dst->param_len = param_len;
-    me_ps_ptr = (struct me_set_ps_disable_req *)kmsg_dst->param;
-    me_ps_ptr->ps_disable = state;
-    me_ps_ptr->vif_idx = vif_entry->index;
-
-    ke_msg_send(ke_msg2param(kmsg_dst));
 }
 
 
@@ -852,7 +848,6 @@ void power_save_dtim_ps_init(void)
 
 }
 
-
 void power_save_dtim_ps_exit(void)
 {
     UINT32 reg;
@@ -975,14 +970,9 @@ int power_save_dtim_disable_handler(void)
 
         if(power_save_wkup_event_get() & NEED_REBOOT_BIT)
         {
-#if CFG_SUPPORT_BOOTLOADER
             os_printf("wdt reboot\r\n");
             sddev_control(WDT_DEV_NAME, WCMD_SET_PERIOD, &wdt_val);
             sddev_control(WDT_DEV_NAME, WCMD_POWER_UP, NULL);
-#else
-            os_printf("reboot\r\n");
-            (*reboot)();
-#endif
         }
     }
     else

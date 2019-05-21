@@ -451,6 +451,42 @@ PWRI(  0x0,      0x9,	      7,	      6,         6,        0x20,      0x7  ),   /
 PWRI(  0x0,      0x6,	      7,	      6,         6,        0x20,      0x7  ),   // 31
 }; 
 
+PWR_REGS cfg_tab_ble[32] = {
+    // pregain REGB<31:28> REGC<11:8> REGC<7:4> REGC<3:0> REGA<13:8> REGA<7:4>         //      pwr	CH0_pwr	current
+	PWRI(  0x1F ,    0xF,         1,        0,         0,      0x1E,       0x4   ),   // 0     -20	 -20      75   
+	PWRI(  0x1F ,    0xF,         1,        1,         1,      0x1E,       0x4   ),   // 1     -15	 -15      76   
+	PWRI(  0x12 ,    0xA,         1,        1,         1,      0x1E,       0x4   ),   // 2     -10	 -10      77   
+	PWRI(  0xC	,    0xA,         1,        2,         2,      0x1E,       0x4   ),   // 3     -5	   -5	  79   
+	PWRI(  0x10 ,    0xA,         2,        2,         2,      0x1E,       0x4   ),   // 4     0	   0	  96   
+	PWRI(  0xB	,    0xA,         2,        2,         2,      0x1E,       0x4   ),   // 5     1	   1	  97   
+	PWRI(  0x7	,    0xA,         2,        2,         2,      0x1E,       0x4   ),   // 6     2	   2	  98   
+	PWRI(  0x4	,    0xA,         2,        2,         2,      0x1E,       0x4   ),   // 7     2.5	 2.5	  99   
+	PWRI(  0x2	,    0xA,         2,        2,         2,      0x1E,       0x4   ),   // 8     3	   3	  100  
+	PWRI(  0x0	,    0xA,         2,        2,         2,      0x1E,       0x4   ),   // 9     3		               
+	PWRI(  0x11 ,    0xA,         2,        3,         3,      0x1E,       0x4   ),   // 10    3.5	 3.5	  101  
+	PWRI(  0xF	,    0xA,         2,        3,         3,      0x1E,       0x4   ),   // 11    4	   4	  102  
+	PWRI(  0xD	,    0xA,         2,        3,         3,      0x1E,       0x4   ),   // 12    4.5	 4.5	  103  
+	PWRI(  0xB	,    0xA,         2,        3,         3,      0x1E,       0x4   ),   // 13    5	   5	  104  
+	PWRI(  0x9	,    0xA,         2,        3,         3,      0x1E,       0x4   ),   // 14    5.5	 5.5	  106  
+	PWRI(  0x6	,    0xA,         2,        3,         3,      0x1E,       0x4   ),   // 15    6	   6	  108  
+	PWRI(  0x4	,    0xA,         2,        3,         3,      0x1E,       0x4   ),   // 16    6.5	 6.5	  109  
+	PWRI(  0x2	,    0xA,         2,        3,         3,      0x1E,       0x4   ),   // 17    7	   7	  111  
+	PWRI(  0x0	,    0xA,         2,        3,         3,      0x1E,       0x4   ),   // 18    7		               
+	PWRI(  0x11 ,    0xA,         2,        4,         4,      0x1E,       0x4   ),   // 19    7.5	 7.5	  114  
+	PWRI(  0xF	,    0xA,         2,        4,         4,      0x1E,       0x4   ),   // 20    8	   8	  116  
+	PWRI(  0xD	,    0xA,         2,        4,         4,      0x1E,       0x4   ),   // 21    8.5	 8.5	  118  
+	PWRI(  0xB	,    0xA,         2,        4,         4,      0x1E,       0x4   ),   // 22    9	   9	  121  
+	PWRI(  0x9	,    0xA,         2,        4,         4,      0x1E,       0x4   ),   // 23    9.5	 9.5	  123  
+	PWRI(  0x6	,    0xA,         2,        4,         4,      0x1E,       0x4   ),   // 24    10	   10	  127  
+	PWRI(  0x4	,    0xA,         2,        4,         4,      0x1E,       0x4   ),   // 25    10.5	 10.5	  130  
+	PWRI(  0x2	,    0xA,         2,        4,         4,      0x1E,       0x4   ),   // 26    11	   11	  133  
+	PWRI(  0xD	,    0xA,         4,        4,         4,      0x1E,       0x4   ),   // 27    12	   12	  147  
+	PWRI(  0x3	,    0xA,         4,        4,         4,      0x1E,       0x4   ),   // 28    14.5	 14	           
+	PWRI(  0x9	,    0xA,         4,        5,         5,      0x1E,       0x4   ),   // 29    16	   16	  190  
+	PWRI(  0x8	,    0xA,         5,        5,         5,      0x1E,       0x4   ),   // 30    19	   18	           
+	PWRI(  0x4	,    0xA,         5,        5,         6,      0x1E,       0x4   ),   // 31    19	   20	           
+};
+
 #define TPCI(gain, rb_28_31, rc_8_11, rc_4_7, rc_0_3, ra_8_13, ra_4_7 ,rf_pa_map)      \
     {                                     \
     .unuse      = 0,            \
@@ -1640,6 +1676,22 @@ void rwnx_cal_set_txpwr_by_rate(INT32 rate, UINT32 test_mode)
 #endif
 }
 
+void rwnx_cal_set_txpwr_by_channel(UINT32 channel)
+{
+    UINT32 ret, pwr_gain, rate;
+    
+    rate = EVM_DEFUALT_BLE_RATE;
+    
+    if(!manual_cal_get_txpwr(rate, channel, 0, &pwr_gain)) 
+    {
+        // unable get txpwr from manual cal
+        return;
+    }
+    os_printf("set pwr:%d - c:%d\r\n", pwr_gain, channel);
+
+    rwnx_cal_set_txpwr(pwr_gain, EVM_DEFUALT_BLE_RATE);
+}
+
 void rwnx_cal_set_reg_adda_ldo(UINT32 val)
 {
 //    os_printf("set_reg_adda_ldo:%d \r\n", val);
@@ -1744,15 +1796,20 @@ void rwnx_cal_set_txpwr(UINT32 pwr_gain, UINT32 grate)
     } else if(grate == EVM_DEFUALT_RATE) {
     // for g
         pcfg = cfg_tab_g + pwr_gain;
+    } else if(grate == EVM_DEFUALT_BLE_RATE) {
+    // for BLE
+        pcfg = cfg_tab_ble + pwr_gain;
     } else {
         os_printf("set_txpwr unknow rate:%d \r\n", grate);  
         return;
     }
 
-    CAL_PRT("idx:%02d,r:%03d- pg:%02x, %01x, %01x, %01x, %01x, %01x, %04x\r\n", pwr_gain, grate,
-        pcfg->pregain, pcfg->regb_28_31, pcfg->regc_8_11,pcfg->regc_4_7, pcfg->regc_0_3, 
-        pcfg->rega_8_13, pcfg->rega_4_7);
-    CAL_PRT("Xtal C: %d\r\n", manual_cal_get_xtal());
+    if(get_ate_mode_state()) {
+        os_printf("idx:%02d,r:%03d- pg:%02x, %01x, %01x, %01x, %01x, %01x, %04x\r\n", pwr_gain, grate,
+            pcfg->pregain, pcfg->regb_28_31, pcfg->regc_8_11,pcfg->regc_4_7, pcfg->regc_0_3, 
+            pcfg->rega_8_13, pcfg->rega_4_7);
+        os_printf("Xtal C: %d\r\n", manual_cal_get_xtal());
+    }
 
     BK7011RCBEKEN.REG0x52->bits.TXPREGAIN = gtx_pre_gain = pcfg->pregain;
     bk7011_rc_val[21] = BK7011RCBEKEN.REG0x52->value;

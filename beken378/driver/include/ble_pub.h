@@ -151,17 +151,19 @@ typedef enum
     BLE_MTU_CHANGE,
     BLE_CFG_NOTIFY,
     BLE_CFG_INDICATE,
+    BLE_TX_DONE
 } ble_event_t;
 
 typedef void (*ble_write_cb_t)(uint16_t char_id, uint8_t *buf, uint8_t len);
 typedef void (*ble_event_cb_t)(ble_event_t event, void *param);
 typedef void (*ble_recv_adv_cb_t)(uint8_t *buf, uint8_t len);
-typedef void (*ble_read_cb_t)(uint16_t char_id, uint8_t *buf, uint8_t len);
+typedef uint8_t (*ble_read_cb_t)(uint16_t char_id, uint8_t *buf, uint8_t len);
 
 extern ble_write_cb_t ble_write_cb;
 extern ble_event_cb_t ble_event_cb;
 extern ble_recv_adv_cb_t ble_recv_adv_cb;
 extern ble_read_cb_t ble_read_cb;
+extern uint32_t  ble_dut_flag;
 
 typedef struct
 {
@@ -220,5 +222,13 @@ typedef struct temp_message
 #define APP_DFLT_DEVICE_NAME_LEN        (sizeof(APP_DFLT_DEVICE_NAME))
 
 extern char app_dflt_dev_name[APP_DEVICE_NAME_LENGTH_MAX];
+
+#define BLE_USER_CMD_OPCODE             (0xFCE0)
+#define BLE_USER_CMD_EXIT_DUT_LEN       (2)
+#define BLE_USER_CMD_EXIT_DUT_CMD       (0x0E)
+#define BLE_USER_CMD_EXIT_DUT_ACT       (0xA0)
+#define BLE_USER_CMD_TX_PWR_SET_CMD     (0x10)
+#define BLE_USER_CMD_TX_PWR_SAVE_CMD    (0x11)
+#define BLE_USER_CMD_XTAL_SET_CMD       (0x12)
 
 #endif /* _BLE_PUB_H_ */

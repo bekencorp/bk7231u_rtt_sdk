@@ -86,7 +86,7 @@
 // 	<e> BLE_APP_BTL
 // 	<i> BLE_APP_BTL enable /disable 
 //  </e>
-#if ( 1 )
+#if ( 0 )
 #define CFG_APP_BTL
 #endif
 
@@ -97,11 +97,25 @@
 #define CFG_APP_SN
 #endif
 
-// 	<e> BLE_APP_AYLA
-// 	<i> BLE_APP_AYLA enable /disable 
+// 	<e> BLE_APP_AYLA_GEN
+// 	<i> BLE_APP_AYLA_GEN enable /disable 
 //  </e>
-#if ( 0 )
-#define CFG_APP_AYLA
+#if ( 1 )
+#define CFG_APP_AYLA_GEN
+#endif
+
+// 	<e> BLE_APP_AYLA_WIFI
+// 	<i> BLE_APP_AYLA_WIFI enable /disable 
+//  </e>
+#if ( 1 )
+#define CFG_APP_AYLA_WIFI
+#endif
+
+// 	<e> BLE_APP_AYLA_CONN
+// 	<i> BLE_APP_AYLA_CONN enable /disable 
+//  </e>
+#if ( 1 )
+#define CFG_APP_AYLA_CONN
 #endif
 
 // 	<e> BLE_APP_SDP
@@ -220,12 +234,27 @@
 #define BLE_APP_SN          0
 #endif // defined(CFG_APP_SN)
 
-/// AYLA Service Application
-#if defined(CFG_APP_AYLA)
-#define BLE_APP_AYLA          1
+/// AYLA_GEN Service Application
+#if defined(CFG_APP_AYLA_GEN)
+#define BLE_APP_AYLA_GEN          1
 #else
-#define BLE_APP_AYLA          0
-#endif // defined(CFG_APP_AYLA)
+#define BLE_APP_AYLA_GEN          0
+#endif // defined(BLE_APP_AYLA_GEN)
+
+/// AYLA_WIFI Service Application
+#if defined(CFG_APP_AYLA_WIFI)
+#define BLE_APP_AYLA_WIFI          1
+#else
+#define BLE_APP_AYLA_WIFI          0
+#endif // defined(BLE_APP_AYLA_WIFI)
+
+/// AYLA_CONN Service Application
+#if defined(CFG_APP_AYLA_CONN)
+#define BLE_APP_AYLA_CONN          1
+#else
+#define BLE_APP_AYLA_CONN          0
+#endif // defined(BLE_APP_AYLA_CONN)
+
 
 // SDP Client Application
 #if defined(CFG_APP_SDP)
@@ -316,7 +345,8 @@
 #endif // defined(CFG_APP_SEC)
 
 #if (BLE_APP_FFE0 || BLE_APP_FFF0 || BLE_APP_FEB3 || BLE_APP_MS \
-        || BLE_APP_BTL || BLE_APP_SN || BLE_APP_AYLA)
+        || BLE_APP_BTL || BLE_APP_SN || BLE_APP_AYLA_GEN || BLE_APP_AYLA_WIFI \
+        || BLE_APP_AYLA_CONN)
 #define BLE_APP_SERVICE      1
 #else
 #define BLE_APP_SERVICE      0

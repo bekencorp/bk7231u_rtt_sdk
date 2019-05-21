@@ -31,10 +31,13 @@ int _atoi(char *str)
 static void ble_usage(void)
 {
     rt_kprintf("ble help            - Help information\n");
+    rt_kprintf("ble dut             - Enter ble dut mode\n");
     rt_kprintf("ble active          - Active ble to config network\n");
     rt_kprintf("ble start_adv [channel_map=7] [interval_max=160] [interval_min=160]\n");
     rt_kprintf("                    - Start advertising as a slave device\n");
     rt_kprintf("ble stop_adv        - Stop advertising as a slave device\n");
+    rt_kprintf("ble send param value\n");
+    rt_kprintf("                    - Send value to master\n");
     rt_kprintf("ble start_scan [channel_map=7] [window=20] [interval=100]\n");
     rt_kprintf("                    - Start scanning as a host device\n");
     rt_kprintf("ble stop_scan       - Stop scan as a host device\n");
@@ -47,7 +50,15 @@ static void ble_usage(void)
 
 void ble_write_callback(uint16_t char_id, uint8_t *data, uint8_t len)
 {
-    rt_kprintf("%s len=%d\n", __FUNCTION__, len);
+    rt_kprintf("%s char_id=0x%04x, len=%d\n", __FUNCTION__, char_id, len);
+}
+
+uint8_t ble_read_callback(uint16_t char_id, uint8_t *data, uint8_t len)
+{
+    rt_kprintf("%s char_id=0x%04x, len=%d\n", __FUNCTION__, char_id, len);
+    data[0] = 'a';
+    data[1] = 'b';
+    return 2;
 }
 
 void ble_event_callback(ble_event_t event, void *param)
@@ -71,10 +82,38 @@ void ble_event_callback(ble_event_t event, void *param)
         case BLE_MTU_CHANGE:
             rt_kprintf("BLE_MTU_CHANGE:%d\r\n", *(uint16_t *)param);
         break;
+        case BLE_CFG_NOTIFY:
+            rt_kprintf("BLE_CFG_NOTIFY:%d\r\n", *(uint16_t *)param);
+        break;
+        case BLE_CFG_INDICATE:
+            rt_kprintf("BLE_CFG_INDICATE:%d\r\n", *(uint16_t *)param);
+        break;
+        case BLE_TX_DONE:
+            rt_kprintf("BLE_TX_DONE");
+        break;
         default:
             rt_kprintf("UNKNOW EVENT\r\n");
         break;
     }
+}
+
+void ble_recv_adv_callback(uint8_t *buf, uint8_t len)
+{
+#if (BLE_APP_CLIENT)
+    uint8_t find = 0;
+
+    find = appm_adv_data_decode(len, buf, NULL, 0);
+
+    if(find)
+    {
+        extern int *scan_check_result;
+        if(scan_check_result)
+        {
+            *scan_check_result = 2;
+            bk_printf("scan_check_result\r\n");
+        }
+    }
+#endif
 }
 
 void ble_adv(ble_adv_param_t *adv_param)
@@ -131,11 +170,17 @@ int ble(int argc, char **argv)
         return 0;
     }
 
-    if (strcmp(argv[1], "active") == 0)
+    if (strcmp(argv[1], "dut") == 0)
+    {
+        ble_dut_start();
+    }
+    else if (strcmp(argv[1], "active") == 0)
     {
         ble_activate(NULL);
         ble_set_write_cb(ble_write_callback);
+        ble_set_read_cb(ble_read_callback);
         ble_set_event_cb(ble_event_callback);
+        ble_set_recv_adv_cb(ble_recv_adv_callback);
     }
     else if(strcmp(argv[1], "start_adv") == 0)
     {
@@ -177,6 +222,45 @@ int ble(int argc, char **argv)
         else
         {
             ble_set_role_mode(BLE_ROLE_NONE);
+        }
+    }
+    else if(strcmp(argv[1], "send") == 0)
+    {
+        uint8_t len;
+        uint8_t write_buffer[20];
+        if(argc != 4)
+        {
+            ble_usage();
+            return 0;
+        }
+
+        len = strlen(argv[3]);
+        if(len % 2 != 0)
+        {
+            rt_kprintf("ERROR\r\n");
+            return 0;
+        }
+        hexstr2bin(argv[3], write_buffer, len/2);
+
+        if(strcmp(argv[2], "ayla_statu") == 0)
+        {
+#if (BLE_APP_AYLA_WIFI)
+            ayla_wifi_send_statu_ntf_value(len/2, write_buffer, 0xff);
+#else
+            rt_kprintf("unvalid param\r\n");
+#endif
+        }
+        else if(strcmp(argv[2], "ayla_scre") == 0)
+        {
+#if (BLE_APP_AYLA_WIFI)
+            ayla_wifi_send_scre_ntf_value(len/2, write_buffer, 0xff);
+#else
+            rt_kprintf("unvalid param\r\n");
+#endif
+        }
+        else
+        {
+            rt_kprintf("unvalid param\r\n");
         }
     }
 #if (BLE_APP_CLIENT)

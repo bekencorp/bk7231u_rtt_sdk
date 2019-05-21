@@ -14,6 +14,7 @@
 #include "bk_timer_pub.h"
 #include "drv_model_pub.h"
 
+extern UINT32 mcu_ps_machw_init(void);
 
 #if CFG_USE_MCU_PS
 
@@ -33,7 +34,6 @@ MCU_PS_MACHW_TM mcu_ps_machw_save;
 static UINT32 sleep_us, start_sleep, wkup_type;
 #endif
 
-UINT32 mcu_ps_machw_init(void);
 
 void peri_busy_count_add(void )
 {
@@ -95,7 +95,7 @@ void mcu_ps_disable(void )
 
 UINT32 mcu_power_save(UINT32 sleep_tick)
 {
-    UINT32 sleep_ms, sleep_pwm_t, param, uart_miss_us = 0, miss_ticks = 0;
+    UINT32 sleep_ms, sleep_pwm_t, param, uart_miss_us = 0, miss_ticks = 0,wastage = 0;
     UINT32 real_sleep_ms, start_sleep, ret, front_ms, wkup_type, reg , uart_flag = 0;
     GLOBAL_INT_DECLARATION();
     GLOBAL_INT_DISABLE();
@@ -157,14 +157,23 @@ UINT32 mcu_power_save(UINT32 sleep_tick)
             wkup_type = sctrl_mcu_wakeup();
 
 #if (CHIP_U_MCU_WKUP_USE_TIMER && (CFG_SOC_NAME == SOC_BK7231U))
-            miss_ticks =  (ps_timer3_disable() + (uart_miss_us + 768/*wastage*/) / 1000) / FCLK_DURATION_MS;
+            if(1 == wkup_type)
+            {
+                wastage = 768;
+            }
+            miss_ticks =  (ps_timer3_disable() + (uart_miss_us + wastage) / 1000) / FCLK_DURATION_MS;
             ps_pwm0_enable();
 #else
 
             {
-                if(REG_READ(ICU_INT_STATUS) & (CO_BIT(IRQ_PWM)))
+                if(1 == wkup_type)
                 {
-                    miss_ticks = (sleep_pwm_t + (uart_miss_us >> 5) + 24/*wastage*/) / (FCLK_DURATION_MS * 32);
+                    wastage = 24;
+                }
+                
+                if(ps_pwm0_int_status())
+                {
+                    miss_ticks = (sleep_pwm_t + (uart_miss_us >> 5) + wastage) / (FCLK_DURATION_MS * 32);
                 }
                 else
                 {
@@ -174,7 +183,7 @@ UINT32 mcu_power_save(UINT32 sleep_tick)
                     }
                     else
                     {
-                        miss_ticks = ((uart_miss_us >> 5) + 24/*wastage*/) / (FCLK_DURATION_MS * 32);
+                        miss_ticks = ((uart_miss_us >> 5) + wastage) / (FCLK_DURATION_MS * 32);
                     }
                 }
 
@@ -371,28 +380,21 @@ void mcu_ps_bcn_callback(uint8_t *data, int len, hal_wifi_link_info_t *info)
 
 UINT32 mcu_ps_tsf_cal(UINT64 tsf)
 {
-    UINT32 fclk, tmp2;
-    UINT64 machw, tmp1;
+    UINT32 fclk, tmp2,tmp4;
+    UINT64 machw, tmp1,tmp3;
     INT32 past_tick, loss;
     GLOBAL_INT_DECLARATION();
+
+    if(0 == mcu_ps_info.mcu_ps_on)
+    {
+        return 0;
+    }
     GLOBAL_INT_DISABLE();
 
 
     if(0 == tsf || 0 == mcu_ps_tsf_save.first_tsf)
     {
-        mcu_ps_tsf_save.first_tsf = tsf;
-
-#if CFG_SUPPORT_RTT
-        fclk = rt_tick_get();
-#else
-        fclk = fclk_get_tick();
-#endif
-        mcu_ps_tsf_save.first_tick = fclk;
-        mcu_ps_tsf_save.prev_tick = 0;
-        mcu_ps_machw_init();
-        os_printf("mcu_ps_tsf_cal init\r\n");
-        GLOBAL_INT_RESTORE();
-        return 0 ;
+        goto TFS_RESET;
     }
 
 #if CFG_SUPPORT_RTT
@@ -402,15 +404,17 @@ UINT32 mcu_ps_tsf_cal(UINT64 tsf)
 #endif
 
     machw = tsf;
+    tmp3 = mcu_ps_tsf_save.first_tsf;
+    tmp4 = mcu_ps_tsf_save.first_tick;
 
     if(machw < mcu_ps_tsf_save.first_tsf)
     {
-        tmp1 = (0xFFFFFFFFFFFFFFFF - mcu_ps_tsf_save.first_tsf) + machw;
-        mcu_ps_tsf_save.first_tsf = tsf;
-        mcu_ps_tsf_save.first_tick = fclk;
+        goto TFS_RESET;
     }
     else
+    {
         tmp1 = machw - mcu_ps_tsf_save.first_tsf;
+    }
 
     if(fclk < mcu_ps_tsf_save.first_tick)
     {
@@ -419,18 +423,33 @@ UINT32 mcu_ps_tsf_cal(UINT64 tsf)
         mcu_ps_tsf_save.first_tsf = machw;
     }
     else
+    {
         tmp2 = fclk - mcu_ps_tsf_save.first_tick;
+    }
 
 
     tmp1 /= 1000;
-    loss = tmp1 / FCLK_DURATION_MS - tmp2;
+
+    if(tmp1/ FCLK_DURATION_MS < (UINT64)tmp2)
+    {
+        loss = (0xFFFFFFFFFFFFFFFF - (UINT64)tmp2) + tmp1 / FCLK_DURATION_MS;
+    }
+    else
+    {
+        loss = tmp1 / FCLK_DURATION_MS - (UINT64)tmp2;
+    }
 
     if(loss > 0)
     {
             if(loss > 5000)
             {
             os_printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            os_printf("tsf cal error:%x %x %x\r\n",loss,machw,mcu_ps_tsf_save.first_tsf);
+            os_printf("tsf cal error:%x \r\n",loss);
+            os_printf("%x %x %x\r\n",fclk,tmp2,tmp4);
+            os_printf("tsf:%x %x\r\n",(UINT32)(machw>>32),(UINT32)machw);
+            os_printf("tmp3:%x %x\r\n",(UINT32)(tmp3>>32),(UINT32)tmp3);
+            os_printf("tmp1:%x %x\r\n",(UINT32)tmp1>>32,(UINT32)tmp1);
+            goto TFS_RESET;
             }
         fclk_update_tick(loss);
 #if CFG_SUPPORT_RTT
@@ -443,10 +462,29 @@ UINT32 mcu_ps_tsf_cal(UINT64 tsf)
     }
     GLOBAL_INT_RESTORE();
     return 0 ;
+
+TFS_RESET:
+    mcu_ps_tsf_save.first_tsf = tsf;
+#if CFG_SUPPORT_RTT
+    fclk = rt_tick_get();
+#else
+    fclk = fclk_get_tick();
+#endif
+    mcu_ps_tsf_save.first_tick = fclk;
+    mcu_ps_machw_init();
+    os_printf("mcu_ps_tsf_cal init\r\n");
+    GLOBAL_INT_RESTORE();
+    return 0 ;
+    
 }
 
 UINT32 mcu_ps_machw_reset(void)
 {
+    if(0 == mcu_ps_info.mcu_ps_on)
+    {
+        return 0;
+    }
+    
     mcu_ps_machw_save.fclk_tick = 0;
     mcu_ps_machw_save.machw_tm = 0;
 }
@@ -456,7 +494,12 @@ UINT32 mcu_ps_machw_init(void)
 {
     UINT32 fclk;
     UINT32 machw;
-
+    
+    if(0 == mcu_ps_info.mcu_ps_on)
+    {
+        return 0;
+    }
+    
 #if CFG_SUPPORT_RTT
     fclk = rt_tick_get();
 #else
@@ -497,20 +540,32 @@ UINT32 mcu_ps_machw_cal(void)
         tmp1 = (0xFFFFFFFF - mcu_ps_machw_save.machw_tm) + machw;
         if(tmp1 > 5000000 || mcu_ps_machw_save.machw_tm < 0xFF000000)
         {
-            mcu_ps_machw_init();
-            return 0 ;
+            goto HWCAL_RESET;
         }
         }
     else
+    {
         tmp1 = machw - mcu_ps_machw_save.machw_tm;
+    }
 
     if(fclk < mcu_ps_machw_save.fclk_tick)
+    {
         tmp2 = (0xFFFFFFFF - mcu_ps_machw_save.fclk_tick) + fclk;
+    }
     else
+    {
         tmp2 = fclk - mcu_ps_machw_save.fclk_tick;
+    }
 
     tmp1 /= 1000;
-    lost = tmp1 / FCLK_DURATION_MS - tmp2;
+    if(tmp1 / FCLK_DURATION_MS < tmp2)
+    {
+        lost = (0xFFFFFFFF - tmp2) + tmp1 / FCLK_DURATION_MS;
+    }
+    else
+    {
+        lost = tmp1 / FCLK_DURATION_MS - tmp2;
+    }
 
     if(lost < 0xFFFFFFFF >> 1)
     {
@@ -518,6 +573,7 @@ UINT32 mcu_ps_machw_cal(void)
             {
             os_printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             os_printf("hw cal error:%x %x %x\r\n",lost,machw,mcu_ps_machw_save.machw_tm);
+            goto HWCAL_RESET;
             }
         fclk_update_tick(lost);
 #if CFG_SUPPORT_RTT
@@ -528,6 +584,11 @@ UINT32 mcu_ps_machw_cal(void)
     else
     {
     }
+    GLOBAL_INT_RESTORE();
+    return 0 ;
+
+HWCAL_RESET:
+    mcu_ps_machw_init();
     GLOBAL_INT_RESTORE();
     return 0 ;
 }

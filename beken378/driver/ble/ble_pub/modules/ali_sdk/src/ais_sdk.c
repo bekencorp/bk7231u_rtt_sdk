@@ -65,7 +65,6 @@
 /// ais sdk Module Environment Structure
 struct ais_sdk_env_tag ais_sdk_env;
 
-txdone txdone_cb = NULL;
 /*
  * GLOBAL FUNCTION DEFINITIONS
  ****************************************************************************************
@@ -331,11 +330,11 @@ static int feb3_gattc_cmp_evt_handler(kernel_msg_id_t const msgid,  struct gattc
     if((param->operation == GATTC_INDICATE) && (param->status == GAP_ERR_NO_ERROR))
     {   		
         ais_sdk_env.fed6_ind_send_allow = 1;
-        
-        if(txdone_cb)
-        {
-            txdone_cb(GAP_ERR_NO_ERROR);
-        } 
+		
+		if(ble_event_cb != NULL)
+		{
+			ble_event_cb(BLE_TX_DONE, NULL);
+		}	
     }	
 		
     return KERNEL_MSG_CONSUMED;

@@ -70,11 +70,23 @@
 #include "sn_task.h"
 #endif //(BLE_APP_SN)
 
-#if (BLE_APP_AYLA)
-#include "app_ayla.h"              // AYLA Module Definition
-#include "ayla_pub.h"
-#include "ayla_task.h"
-#endif //(BLE_APP_AYLA)
+#if (BLE_APP_AYLA_GEN)
+#include "app_ayla_gen.h"              // AYLA_GEN Module Definition
+#include "ayla_gen_pub.h"
+#include "ayla_gen_task.h"
+#endif //(BLE_APP_AYLA_GEN)
+
+#if (BLE_APP_AYLA_WIFI)
+#include "app_ayla_wifi.h"              // AYLA_WIFI Module Definition
+#include "ayla_wifi_pub.h"
+#include "ayla_wifi_task.h"
+#endif //(BLE_APP_AYLA_WIFI)
+
+#if (BLE_APP_AYLA_CONN)
+#include "app_ayla_conn.h"              // AYLA_CONN Module Definition
+#include "ayla_conn_pub.h"
+#include "ayla_conn_task.h"
+#endif //(BLE_APP_AYLA_CONN)
 
 #if BLE_APP_SDP
 #include "sdp_service.h"
@@ -817,7 +829,7 @@ static int gapc_disconnect_ind_handler(kernel_msg_id_t const msgid,
     // Go to the ready state
     kernel_state_set(TASK_APP, APPM_READY);
 
-#if (BLE_PROFILES)
+#if (BLE_APP_SDP)
 	// Initialize Profiles
 	if (BLE_ROLE_MASTER == ble_get_role_mode())
     {
@@ -1106,45 +1118,62 @@ static int appm_msg_handler(kernel_msg_id_t const msgid,
 
 
 			
-	#if (BLE_APP_FEB3)
-	case (TASK_ID_FEB3S):
-	{
-		// Call the Health Thermometer Module
-		msg_pol = appm_get_handler(&app_feb3_table_handler, msgid, param, src_id);
-	} break;
-	#endif //(BLE_APP_FEB3)
+        #if (BLE_APP_FEB3)
+        case (TASK_ID_FEB3S):
+        {
+            // Call the Health Thermometer Module
+            msg_pol = appm_get_handler(&app_feb3_table_handler, msgid, param, src_id);
+        } break;
+        #endif //(BLE_APP_FEB3)
 
-    #if (BLE_APP_MS)
-	case (TASK_ID_MS):
-	{
-		// Call the Health Thermometer Module
-		msg_pol = appm_get_handler(&app_ms_table_handler, msgid, param, src_id);
-	} break;
-	#endif //(BLE_APP_MS)
+        #if (BLE_APP_MS)
+        case (TASK_ID_MS):
+        {
+            // Call the Health Thermometer Module
+            msg_pol = appm_get_handler(&app_ms_table_handler, msgid, param, src_id);
+        } break;
+        #endif //(BLE_APP_MS)
 
-    #if (BLE_APP_BTL)
-	case (TASK_ID_BTL):
-	{
-		// Call the Health Thermometer Module
-		msg_pol = appm_get_handler(&app_btl_table_handler, msgid, param, src_id);
-	} break;
-	#endif //(BLE_APP_BTL)
+        #if (BLE_APP_BTL)
+        case (TASK_ID_BTL):
+        {
+            // Call the Health Thermometer Module
+            msg_pol = appm_get_handler(&app_btl_table_handler, msgid, param, src_id);
+        } break;
+        #endif //(BLE_APP_BTL)
 
-    #if (BLE_APP_SN)
-	case (TASK_ID_SN):
-	{
-		// Call the Health Thermometer Module
-		msg_pol = appm_get_handler(&app_sn_table_handler, msgid, param, src_id);
-	} break;
-    #endif //(BLE_APP_SN)
+        #if (BLE_APP_SN)
+        case (TASK_ID_SN):
+        {
+            // Call the Health Thermometer Module
+            msg_pol = appm_get_handler(&app_sn_table_handler, msgid, param, src_id);
+        } break;
+        #endif //(BLE_APP_SN)
 
-    #if (BLE_APP_AYLA)
-	case (TASK_ID_AYLA):
-	{
-		// Call the Health Thermometer Module
-		msg_pol = appm_get_handler(&app_ayla_table_handler, msgid, param, src_id);
-	} break;
-    #endif //(BLE_APP_AYLA)
+        #if (BLE_APP_AYLA_GEN)
+        case (TASK_ID_AYLA_GEN):
+        {
+            // Call the Health Thermometer Module
+            msg_pol = appm_get_handler(&app_ayla_gen_table_handler, msgid, param, src_id);
+        } break;
+        #endif //(BLE_APP_AYLA_GEN)
+
+        #if (BLE_APP_AYLA_WIFI)
+        case (TASK_ID_AYLA_WIFI):
+        {
+            // Call the Health Thermometer Module
+            msg_pol = appm_get_handler(&app_ayla_wifi_table_handler, msgid, param, src_id);
+        } break;
+        #endif //(BLE_APP_AYLA_WIFI)
+
+        #if (BLE_APP_AYLA_CONN)
+        case (TASK_ID_AYLA_CONN):
+        {
+            // Call the Health Thermometer Module
+            msg_pol = appm_get_handler(&app_ayla_conn_table_handler, msgid, param, src_id);
+        } break;
+        #endif //(BLE_APP_AYLA_CONN)
+
 
 		#if (BLE_APP_ANCSC)
         case (TASK_ID_ANCSC):

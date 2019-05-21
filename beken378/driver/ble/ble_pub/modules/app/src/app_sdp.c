@@ -12,7 +12,6 @@
 #include "sdp_service.h"
 #include "uart.h"
 #include "gpio.h"
-#include "flash.h"
 #include "llm_util.h"
 
 

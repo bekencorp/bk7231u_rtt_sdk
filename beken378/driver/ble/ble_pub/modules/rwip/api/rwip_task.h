@@ -175,9 +175,17 @@ enum TASK_API_ID
     TASK_ID_SN           = 76,
 #endif //(BLE_SN_SERVER)
 
-#if (BLE_AYLA_SERVER)
-    TASK_ID_AYLA         = 77,
-#endif //(BLE_AYLA_SERVER)
+#if (BLE_AYLA_GEN_SERVER)
+    TASK_ID_AYLA_GEN         = 77,
+#endif //(BLE_AYLA_GEN_SERVER)
+
+#if (BLE_AYLA_WIFI_SERVER)
+    TASK_ID_AYLA_WIFI         = 78,
+#endif //(BLE_AYLA_WIFI_SERVER)
+
+#if (BLE_AYLA_CONN_SERVER)
+    TASK_ID_AYLA_CONN         = 79,
+#endif //(BLE_AYLA_CONN_SERVER)
 
 #if (BLE_SDP_CLIENT)
 	TASK_ID_SDP			 = 100,   // SDP Client Task

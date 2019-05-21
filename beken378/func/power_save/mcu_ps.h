@@ -14,7 +14,6 @@
 typedef struct
 {
     UINT32 first_tick;
-    UINT32 prev_tick;
     UINT64 first_tsf;
 } MCU_PS_TSF;
 typedef struct

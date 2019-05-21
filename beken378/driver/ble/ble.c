@@ -140,10 +140,6 @@ void ble_switch_rf_to_ble(void)
     sddev_control(SCTRL_DEV_NAME, CMD_BLE_RF_BIT_SET, NULL);
     GLOBAL_INT_RESTORE();
 
-    if(! sctrl_if_rf_sleep())
-    {
-        rwnx_cal_set_txpwr(1, 11);
-    }
     //PS_DEBUG_RF_UP_TRIGER;
 }
 
@@ -314,11 +310,12 @@ static void ble_main( void *arg )
     memcpy(&common_default_bdaddr, &ble_cfg.mac, sizeof(struct bd_addr));
     memcpy(&app_dflt_dev_name, &ble_cfg.name, APP_DEVICE_NAME_LENGTH_MAX); 
 
+    if(!ble_dut_flag)
     {
-    UINT8 *mac = (UINT8 *)&ble_cfg.mac;
-    
-    os_printf("ble name:%s, %02x:%02x:%02x:%02x:%02x:%02x\r\n", 
-        app_dflt_dev_name, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+        UINT8 *mac = (UINT8 *)&ble_cfg.mac;
+        
+        os_printf("ble name:%s, %02x:%02x:%02x:%02x:%02x:%02x\r\n", 
+            app_dflt_dev_name, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
     }
     ble_flag = 1;
 	rw_main();
@@ -492,7 +489,7 @@ void ble_activate(char *ble_name)
 
 //    bk_wlan_stop(1);
 
-    if(!ble_name) {
+    if((!ble_name) && (!ble_dut_flag)) {
         os_printf("ble start no ble name\r\n");
         ble_name = APP_DFLT_DEVICE_NAME;
     }
@@ -518,10 +515,8 @@ void ble_dut_start(void)
     {
         ble_dut_flag = 1;
 
-        os_printf("ble_dut\r\n");
+        os_printf("enter ble dut\r\n");
         
-        rwnx_cal_set_txpwr(1, 11);
-
         intc_service_change_handler(IRQ_UART2, uart_isr);    
         
         ble_activate(NULL);

@@ -1,7 +1,7 @@
 /**
  ****************************************************************************************
  *
- * @file app_ayla.h
+ * @file app_ayla_conn.h
  *
  * @brief findt Application Module entry point
  *
@@ -14,14 +14,14 @@
  *
  ****************************************************************************************
  */
-#ifndef APP_AYLA_H_
-#define APP_AYLA_H_
+#ifndef APP_AYLA_CONN_H_
+#define APP_AYLA_CONN_H_
 /**
  ****************************************************************************************
  * @addtogroup APP
  * @ingroup RICOW
  *
- * @brief AYLA Application Module entry point
+ * @brief AYLA_CONN Application Module entry point
  *
  * @{
  ****************************************************************************************
@@ -33,10 +33,10 @@
 
 #include "rwip_config.h"     // SW configuration
 
-#if (BLE_APP_AYLA)
+#if (BLE_APP_AYLA_CONN)
 #include <stdint.h>          // Standard Integer Definition
 #include "ble_pub.h"
-#include "ayla_pub.h"
+#include "ayla_conn_pub.h"
 #include "kernel_task.h"         // Kernel Task Definition
 
 /*
@@ -45,14 +45,10 @@
  */
 
 ///  Application Module Environment Structure
-struct app_ayla_env_tag
+struct app_ayla_conn_env_tag
 {
     /// Connection handle
     uint8_t conidx;
-    /// Current Ba
-    uint16_t send_ntf_cfg;
-    uint8_t allow_send_flag;
-
 };
 /*
  * GLOBAL VARIABLES DECLARATIONS
@@ -60,10 +56,10 @@ struct app_ayla_env_tag
  */
 
 ///  Application environment
-extern struct app_ayla_env_tag app_ayla_env;
+extern struct app_ayla_conn_env_tag app_ayla_conn_env;
 
 /// Table of message handlers
-extern const struct kernel_state_handler app_ayla_table_handler;
+extern const struct kernel_state_handler app_ayla_conn_table_handler;
 /*
  * FUNCTIONS DECLARATION
  ****************************************************************************************
@@ -82,26 +78,25 @@ extern const struct kernel_state_handler app_ayla_table_handler;
  * @brief Initialize  Application Module
  ****************************************************************************************
  */
-void app_ayla_init(void);
+void app_ayla_conn_init(void);
 /**
  ****************************************************************************************
  * @brief Add a Service instance in the DB
  ****************************************************************************************
  */
-void app_ayla_add_ayla(void);
+void app_ayla_conn_add_conn(void);
 /**
  ****************************************************************************************
  * @brief Enable the  Service
  ****************************************************************************************
  */
-void app_ayla_enable_prf(uint8_t conidx);
+void app_ayla_conn_enable_prf(uint8_t conidx);
 /**
  ****************************************************************************************
  * @brief Send a Battery level value
  ****************************************************************************************
  */
-void app_ayla_ffa1_val(uint8_t len,uint8_t *buf,uint16_t seq_num);
 
-#endif //(BLE_APP_AYLA)
+#endif //(BLE_APP_AYLA_CONN)
 
-#endif // APP_AYLA_H_
+#endif // APP_AYLA_CONN_H_
