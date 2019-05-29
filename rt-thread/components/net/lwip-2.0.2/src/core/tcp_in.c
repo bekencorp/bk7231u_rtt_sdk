@@ -1479,6 +1479,19 @@ tcp_receive(struct tcp_pcb *pcb)
           seqno = pcb->ooseq->tcphdr->seqno;
 
           pcb->rcv_nxt += TCP_TCPLEN(cseg);
+          if( !((pcb->rcv_wnd - TCP_MSS) >= TCP_TCPLEN(cseg)) )
+          {
+              rt_kprintf("[aozima] !((pcb->rcv_wnd - TCP_MSS) >= TCP_TCPLEN(cseg))\n"
+              "tcp_receive: ooseq tcplen(%d) rcv_wnd(%d)\n", (int)(TCP_TCPLEN(cseg)), pcb->rcv_wnd );
+          }
+
+          if( !(pcb->rcv_wnd >= TCP_TCPLEN(cseg)) )
+          {
+              rt_kprintf("tcp_receive: ooseq tcplen(%d) > rcv_wnd(%d)\n", (int)(TCP_TCPLEN(cseg)), pcb->rcv_wnd );
+              pcb->ooseq = cseg->next;
+              tcp_seg_free(cseg);
+              continue;
+          }
           LWIP_ASSERT("tcp_receive: ooseq tcplen > rcv_wnd\n",
                       pcb->rcv_wnd >= TCP_TCPLEN(cseg));
           pcb->rcv_wnd -= TCP_TCPLEN(cseg);
