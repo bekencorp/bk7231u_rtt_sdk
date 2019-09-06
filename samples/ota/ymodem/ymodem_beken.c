@@ -47,6 +47,7 @@ static enum rym_code ymodem_on_begin(struct rym_ctx *ctx, rt_uint8_t *buf, rt_si
         return RYM_CODE_CAN;
     }
 
+    bk_flash_enable_security(FLASH_PROTECT_HALF); // half or custom
     /* erase DL section */
     if (fal_partition_erase_all(dl_part) < 0)
     {
