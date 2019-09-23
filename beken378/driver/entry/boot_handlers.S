@@ -21,7 +21,18 @@
 	.globl irq_handler
 	.globl fiq_handler
 	.globl vPortStartFirstTask
-
+	.globl do_irq
+	.globl do_fiq
+	.globl do_swi
+	.globl do_undefined
+	.globl do_pabort
+	.globl do_dabort
+	.globl do_reserved
+    .globl bk_trap_udef
+    .globl bk_trap_pabt
+    .globl bk_trap_dabt
+    .globl bk_trap_resv
+    
 #include "sys_config.h"
 
 /* ========================================================================
@@ -53,7 +64,21 @@
 /* ========================================================================
  Context save and restore macro definitions
  * ======================================================================== */
-	
+/* ========================================================================
+/**
+ * Push SVC reg
+ */
+    .macro PUSH_SVC_REG
+        SUB     SP, SP, #17 * 4
+        STMIA   SP, {R0 - R12}
+        MOV     R0, SP
+        MRS     R6, SPSR
+        STR     LR, [R0, #15*4]
+        STR     R6, [R0, #16*4]
+        STR     SP, [R0, #13*4]
+        STR     LR, [R0, #14*4]
+    .endm
+    
 /* ========================================================================*/
 	.macro   portSAVE_CONTEXT 
 	//Push R0 as we are going to use the register.
@@ -363,27 +388,89 @@ _sysboot_zi_init:
     BX LR
 
 		.align	5 
+do_undefined:
+    LDMFD   SP!, {R0-R1}
+    PUSH_SVC_REG
+    B bk_trap_udef
+	
+		.align	5 
+do_pabort:
+    LDMFD   SP!, {R0-R1}
+    PUSH_SVC_REG
+    B bk_trap_pabt
+		
+		.align	5 
+do_dabort:
+    LDMFD   SP!, {R0-R1}
+    PUSH_SVC_REG
+    B bk_trap_dabt
+		
+		.align	5 
+do_reserved:
+    LDMFD   SP!, {R0-R1}
+    PUSH_SVC_REG
+    B bk_trap_resv
+
+
+        .align  5
 boot_undefined:
-    B boot_undefined
+	STMFD  sp!,{r0-r1}
+	LDR    R1, =0x40000c
+	LDR    r0, [R1]
+	BX     r0
+
+        .align  5
+boot_pabort:
+	STMFD  sp!,{r0-r1}
+	LDR    R1, =0x400010
+	LDR    r0, [R1]
+	BX     r0
+
+        .align  5
+boot_dabort:
+	STMFD  sp!,{r0-r1}
+	LDR    R1, =0x400014
+	LDR    r0, [R1]
+	BX     r0
+
+        .align  5
+boot_reserved:
+	STMFD  sp!,{r0-r1}
+	LDR    R1, =0x400018
+	LDR    r0, [R1]
+	BX     r0
+
 
 		.align	5 
-boot_swi:
+do_swi:
+    LDMFD   SP!, {R0-R1}
     B vPortYieldProcessor
-		
-		.align	5 
-boot_pabort:
-    B boot_pabort
-		
-		.align	5 
-boot_dabort:
-    B boot_dabort
-		
-		.align	5 
-boot_reserved:
-    B boot_reserved
+
+		.align	5
+boot_swi:
+	STMFD  sp!,{r0-r1}
+	LDR    R1, =0x400008
+	LDR    r0, [R1]
+	BX     r0
+
+		.align	5
+irq_handler:
+	STMFD  sp!,{r0-r1}
+	LDR    R1, =0x400000
+	LDR    r0, [R1]
+	BX     r0
+
+
+		.align	5
+fiq_handler:
+	STMFD  sp!,{r0-r1}
+	LDR    R1, =0x400004
+	LDR    r0, [R1]
+	BX     r0
     
 		.align	5 
-irq_handler:	
+do_irq:
+    LDMFD   SP!, {R0-R1}
 	portSAVE_CONTEXT
 	LDR R0, =intc_irq
 	MOV LR, PC
@@ -391,7 +478,8 @@ irq_handler:
 	portRESTORE_CONTEXT
 	
 		.align	5    
-fiq_handler:	
+do_fiq:
+    LDMFD   SP!, {R0-R1}
 	portSAVE_CONTEXT
 	LDR R0, =intc_fiq
 	MOV LR, PC
@@ -405,11 +493,9 @@ vPortStartFirstTask:
 
 /*Manual context switch function.  This is the SWI hander.*/
 vPortYieldProcessor:
-#if (0 == CFG_SUPPORT_BOOTLOADER)
 	ADD		LR, LR, #4			//Add 4 to the LR to make the LR appear exactly
 								//as if the context was saved during and IRQ
 								//handler.
-#endif // CFG_SUPPORT_BOOTLOADER
 
 	portSAVE_CONTEXT			//Save the context of the current task...
 	

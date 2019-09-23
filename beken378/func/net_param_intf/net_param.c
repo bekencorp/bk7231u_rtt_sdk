@@ -76,6 +76,9 @@ static UINT32 info_item_len(NET_INFO_ITEM item)
 		case AUTO_CONNECT_ITEM:
 		case WIFI_MODE_ITEM:
 		case DHCP_MODE_ITEM:
+		case RF_CFG_TSSI_ITEM:
+		case RF_CFG_DIST_ITEM:
+		case RF_CFG_MODE_ITEM: 
 			len = sizeof(ITEM_COMM_ST);
 			break;
 		case WIFI_MAC_ITEM:
@@ -131,6 +134,9 @@ UINT32 get_info_item(NET_INFO_ITEM item,UINT8 *ptr0,UINT8 *ptr1, UINT8 *ptr2)
 		case WIFI_MODE_ITEM:
 		case DHCP_MODE_ITEM:
 		case WIFI_MAC_ITEM:
+		case RF_CFG_TSSI_ITEM:
+		case RF_CFG_DIST_ITEM:
+		case RF_CFG_MODE_ITEM: 
 		case CHARGE_CONFIG_ITEM:
 			if(ptr0 != NULL)
 			{
@@ -228,6 +234,9 @@ UINT32 save_info_item(NET_INFO_ITEM item,UINT8 *ptr0,UINT8*ptr1,UINT8 *ptr2)
 		case AUTO_CONNECT_ITEM:
 		case WIFI_MODE_ITEM:
 		case DHCP_MODE_ITEM:
+		case RF_CFG_TSSI_ITEM:
+		case RF_CFG_DIST_ITEM:
+		case RF_CFG_MODE_ITEM: 
 			os_memcpy(item_buf,ptr0,4);
 			break;
 			

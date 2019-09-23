@@ -71,6 +71,8 @@ struct phy_env_tag phy_env[1];
 //BK,170206,solve large input-power 0% PER issue.
 #define RF_DOWN_ENABLE 0 
 
+//#define CFG_SYS_CLOSE_CCA
+
 const uint32_t agc_ram_parameter[] =
 {
 #if NEW_AGC_PARA        //solve input-power vs PER discontinuous issue.
@@ -1402,7 +1404,12 @@ static void phy_agc_init(void)
 
     // RWNXAGCCCA1 (CCA{FALL,RISE}THRDBM)
     // for when RWNXAGCCCACTRL[CCAENERGYEN] is on
+#if defined(CFG_SYS_CLOSE_CCA)
     agc_rwnxagccca1_set((agc_rwnxagccca1_get() & ~0x000ff0ff) | 0x000bf0c3);
+#else
+    agc_rwnxagccca1_set((agc_rwnxagccca1_get() & ~0x000ff1ff) | 0x000bf0c3);
+#endif
+    //os_printf("agc_rwnxagccca1=0x%x\n", agc_rwnxagccca1_get());
 
     // RWNXAGCCCACTRL
     agc_rwnxagcccactrl_set((agc_rwnxagcccactrl_get() & ~0x00000fff) | 0x00000377);
@@ -1685,7 +1692,7 @@ static void phy_change_bw(uint8_t bw)
     switch(bw)
     {
     case PHY_CHNL_BW_20:
-        mdm_txstartdelay_setf(0x00000160); 
+        mdm_txstartdelay_setf(0x000000b4); 
         mdm_tbectrl0_set(0x0C0F0700);
 
 #if (NX_MDM_VER == 11)
@@ -1753,6 +1760,11 @@ void phy_init(const struct phy_cfg_tag *config)
 
     //AGC - separate or in MDM?
     phy_agc_init();
+
+#if defined(CFG_SYS_CLOSE_CCA)
+	extern uint8_t phy_close_cca(void);
+	phy_close_cca();
+#endif
 }
 
 void rcbeken_reconfigure(void)
@@ -1930,34 +1942,7 @@ void phy_get_version(uint32_t *version_1, uint32_t *version_2)
     *version_2 = 0;
 }
 
-static void set_trx_regs_extern(void)
-{
-    UINT32 reg;
-
-    reg = REG_READ((0x01050080+0x12*4));
-    reg &= ~(0x3f << 16);
-    reg |=( (0x1<<22) | (0x04 << 19) |(0x04 << 16));
-    REG_WRITE((0x01050080+0x12*4), reg);  // trx 0x12[22:16]
-
-    reg = REG_READ((0x01050080+0x0d*4));
-    reg |= (0x4|0x2);
-    REG_WRITE((0x01050080+0x0d*4),reg); 
-
-    reg = REG_READ((0x01050080+0x0e*4));
-    reg |= (0x4|0x2);
-    REG_WRITE((0x01050080+0x0e*4),reg);   
-
-    reg = REG_READ((0x01050080+0x10*4));
-    reg |= (0x4|0x2);
-    REG_WRITE((0x01050080+0x10*4),reg); 
-
-    reg = REG_READ((0x01050080+0x0f*4));
-    reg |= (0x4|0x2);
-    REG_WRITE((0x01050080+0x0f*4),reg);     
-
-    while(REG_READ((0x01050000+0x1*4))&(0xFFFFFFF));
-}
-
+extern void rwnx_cal_set_40M_setting(void);
 void phy_set_channel(uint8_t band, uint8_t type, uint16_t prim20_freq,
                      uint16_t center1_freq, uint16_t center2_freq, uint8_t index)
 {
@@ -2051,8 +2036,15 @@ void phy_set_channel(uint8_t band, uint8_t type, uint16_t prim20_freq,
     rc_ch0_tx_onoff_delay_set(0x00010010);
     rc_ch0_pa_onoff_delay_set(0x000A00E0);
 
-    if(type == PHY_CHNL_BW_40)
-        set_trx_regs_extern();
+    if(type == PHY_CHNL_BW_40) {
+        rwnx_cal_set_40M_setting();
+        agc_rwnxagcsat_set(0x8373335);
+    }
+    else
+    {
+        agc_rwnxagcsat_set(0x8393537);
+    }
+    
 }
 
 void phy_get_channel(struct phy_channel_info *info, uint8_t index)
@@ -2160,7 +2152,6 @@ uint8_t phy_show_cca(void)
     //os_printf("0x01002074:%x\r\n",agc_rwnxagccca1_get());
     //os_printf("0x01002070:%x\r\n",agc_rwnxagccca0_get());
 }
-
 /**
  * TX power = idx * 0.5 + TX_GAIN_MIN + PA_GAIN
  *
@@ -2202,11 +2193,7 @@ void phy_get_rf_gain_idx(int8_t *power, uint8_t *idx)
         *power = min;
     }
 
-#if CFG_SUPPORT_TPC_PA_MAP
-    *idx = (*power - 5);
-#else
     *idx = 2 * (*power - oft);
-#endif
 }
 
 void phy_get_rf_gain_capab(int8_t *max, int8_t *min)

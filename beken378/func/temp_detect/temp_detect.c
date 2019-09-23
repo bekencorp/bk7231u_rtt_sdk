@@ -37,11 +37,7 @@ volatile DD_HANDLE tmp_detect_hdl = DD_HANDLE_UNVALID;
 saradc_desc_t tmp_detect_desc;
 UINT16 tmp_detect_buff[ADC_TEMP_BUFFER_SIZE];
 TEMP_DETECT_CONFIG_ST g_temp_detect_config;
-#if CFG_SUPPORT_ALIOS
 beken_thread_t  temp_detct_handle = NULL;
-#else
-xTaskHandle  temp_detct_handle = NULL;
-#endif
 
 enum
 {
@@ -53,7 +49,7 @@ enum
 	TMPD_EXIT,
 };
 
-typedef struct temp_message 
+typedef struct _temp_message 
 {
 	u32 temp_msg;
 }TEMP_MSG_T;
@@ -220,15 +216,15 @@ static UINT32 temp_detect_open(void)
 
 static UINT32 temp_detect_close(void)
 {
-    UINT32 status;
+    UINT32 status = DRV_SUCCESS;
     GLOBAL_INT_DECLARATION();
 
     GLOBAL_INT_DISABLE();
     status = ddev_close(tmp_detect_hdl);
     if(DRV_FAILURE == status )
     {
-        GLOBAL_INT_RESTORE();
-        return SARADC_FAILURE;
+        //GLOBAL_INT_RESTORE();
+        //return SARADC_FAILURE;
     }
     tmp_detect_hdl = DD_HANDLE_UNVALID;
     GLOBAL_INT_RESTORE();
@@ -275,6 +271,7 @@ static UINT32 temp_detect_enable(void)
 static void temp_detect_disable(void)
 {
     temp_detect_close();
+    saradc_ensure_close();
     temp_detect_disable_config_sysctrl();
     TMP_DETECT_PRT("saradc_open is close \r\n");
 }
@@ -351,12 +348,17 @@ static void temp_detect_main( beken_thread_arg_t data )
     tmp_detect_desc.p_Int_Handler = temp_detect_handler;   
     
     g_temp_detect_config.last_detect_val = (UINT32)(data);
-    g_temp_detect_config.inital_data = (UINT32)(data) + ADC_TMEP_DIST_INTIAL_VAL;        
+#if CFG_TEMP_DETECT_VERSION == CFG_TEMP_DETECT_VERSION1
+    g_temp_detect_config.inital_data = (UINT32)(data);  
+#else
+	g_temp_detect_config.inital_data = (UINT32)(data) + ADC_TMEP_DIST_INTIAL_VAL;  
+#endif
     g_temp_detect_config.detect_thre = ADC_TMEP_LSB_PER_10DEGREE * ADC_TMEP_10DEGREE_PER_DBPWR;
     g_temp_detect_config.detect_intval = ADC_TMEP_DETECT_INTVAL_INIT;
     g_temp_detect_config.detect_intval_change = 0;
     g_temp_detect_config.dist_inital = ADC_TMEP_DIST_INTIAL_VAL;
-
+	
+#if CFG_TEMP_DETECT_VERSION != CFG_TEMP_DETECT_VERSION1
     g_temp_detect_config.last_xtal_val = (UINT32)(data);
     #if (CFG_SOC_NAME != SOC_BK7231)
     g_temp_detect_config.xtal_thre_val = ADC_XTAL_DIST_INTIAL_VAL;
@@ -364,7 +366,7 @@ static void temp_detect_main( beken_thread_arg_t data )
     os_printf("xtal inital:%d, %d, %d\r\n", g_temp_detect_config.last_xtal_val,
         g_temp_detect_config.xtal_thre_val, g_temp_detect_config.xtal_init_val);
     #endif // (CFG_SOC_NAME != SOC_BK7231)
-
+#endif
 	err = rtos_init_timer(&g_temp_detect_config.detect_timer, 
 							g_temp_detect_config.detect_intval * 1000, 
 							temp_detect_timer_handler, 
@@ -432,6 +434,12 @@ tempd_exit:
 
 static void temp_detect_handler(void)
 {
+    if(tmp_detect_hdl == DD_HANDLE_UNVALID)
+    {
+        //os_printf("u_err\r\n");
+        return;
+    }
+    
     if(tmp_detect_desc.current_sample_data_cnt >= tmp_detect_desc.data_buff_size) 
     {
         #if (CFG_SOC_NAME != SOC_BK7231)
@@ -548,14 +556,15 @@ static UINT32 temp_single_get_enable(void)
 
 static void temp_single_get_disable(void)
 {
-    UINT32 status;
+    UINT32 status = DRV_SUCCESS;
     
     status = ddev_close(tmp_single_hdl);
     if(DRV_FAILURE == status )
     {
-        TMP_DETECT_PRT("saradc disable failed\r\n");
-        return;
+        //TMP_DETECT_PRT("saradc disable failed\r\n");
+        //return;
     }
+    saradc_ensure_close();
     tmp_single_hdl = DD_HANDLE_UNVALID;
     
     status = BLK_BIT_TEMPRATURE_SENSOR;

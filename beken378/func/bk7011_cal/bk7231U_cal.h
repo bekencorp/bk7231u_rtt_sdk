@@ -11,6 +11,9 @@
 #define REGTRXV2A
 #define BK7011_VER_A
 
+////Difference between pieces
+#define DIFFERENCE_PIECES_CFG        0
+
 //#define _11MBPS_MAX_POWER
 
 void delay05us(INT32 num);
@@ -1860,7 +1863,7 @@ struct BK7011TRxV2A_TypeDef
 typedef struct
 {
     unsigned int rega_4_7   : 4;       
-    unsigned int rega_8_13  : 6; 
+    unsigned int rega_0_1   : 2; 
     unsigned int regb_28_31 : 4;     
     unsigned int regc_0_3   : 4; 
     unsigned int regc_4_7   : 4; 
@@ -1869,28 +1872,13 @@ typedef struct
     unsigned int unuse      : 1;
 } PWR_REGS;
 
-#define     PA_LEVEL0_MAP           (RC_BEKEN_BASE + 0x70*4)
-#define     PA_LEVEL_MAP_MASK       0xFFFF   
-#define     PA_LEVEL_MAP_L_POSI     0
-#define     PA_LEVEL_MAP_H_POSI     16   
-
-#define     MODEM_REG_BASE_ADDR      0x1000000
-#define     MODEM_REG_C00_ADDR      (MODEM_REG_BASE_ADDR + 0xC00*4)
-#define     MODEM_PWR_LEVEL_MASK    3
-#define     MODEM_PWR_LEVEL_POSI    10
-
-
 typedef struct
 {
-    unsigned int rega_4_7   : 4;       
-    unsigned int rega_8_13  : 6; 
     unsigned int regb_28_31 : 4;     
     unsigned int regc_0_3   : 4; 
     unsigned int regc_4_7   : 4; 
     unsigned int regc_8_11  : 4;     
-    unsigned int pregain    : 5;
-    unsigned int unuse      : 1;
-    unsigned short rf_pa_map_value;
+    unsigned short value;
 } PWR_REGS_TPC;
 
 /*******************************************************************************

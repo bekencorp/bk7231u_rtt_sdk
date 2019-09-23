@@ -222,14 +222,10 @@ void rt_application_init(void)
     rt_thread_startup(tid);
 }
 
-#define CFG_RTT_SUPPORT_BOOTLOADER 1
 
 int rtthread_startup(void)
 {
     rt_hw_interrupt_disable();
-#if CFG_RTT_SUPPORT_BOOTLOADER
-	entry_set_world_flag();
-#endif
 
     /* board level initalization
      * NOTE: please initialize heap inside board initialization.

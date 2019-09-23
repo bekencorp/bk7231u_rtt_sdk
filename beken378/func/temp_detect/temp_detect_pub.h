@@ -29,12 +29,14 @@
 #define ADC_TMEP_DIST_INTIAL_VAL                    (0)
 #if (CFG_SOC_NAME == SOC_BK7231)
 #define ADC_TMEP_LSB_PER_10DEGREE                   (24)
+#elif (CFG_SOC_NAME == SOC_BK7231U)
+#define ADC_TMEP_LSB_PER_10DEGREE                   (12)     ///7231U:12
 #else
-#define ADC_TMEP_LSB_PER_10DEGREE                   (22)// 7231:24,7231U:22,
+#define ADC_TMEP_LSB_PER_10DEGREE                   (22)// 7231:24
 #endif
 #define ADC_TMEP_10DEGREE_PER_DBPWR                 (1) // 7231:1,7231U:1,
 #define ADC_TEMP_VAL_MIN                            (50)
-#define ADC_TEMP_VAL_MAX                            (500)
+#define ADC_TEMP_VAL_MAX                            (700)
 
 #define ADC_XTAL_DIST_INTIAL_VAL                    (70)
 

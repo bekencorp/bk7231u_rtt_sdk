@@ -21,9 +21,12 @@ static char log_print = 0;
 
 static void idle_hook(void)
 {
-    rt_tick_t timeout_tick, delta_tick;
+    rt_tick_t timeout_tick, delta_tick=0;
 
     rt_enter_critical();
+
+	GLOBAL_INT_DECLARATION();
+	GLOBAL_INT_DISABLE();
     /* get next os tick */
     timeout_tick = rt_timer_next_timeout_tick();
     if (timeout_tick != RT_TICK_MAX)
@@ -36,15 +39,20 @@ static void idle_hook(void)
     delta_tick = mcu_power_save(timeout_tick);
     if(log_print)
         rt_kprintf("s:%d, d:%d\n", timeout_tick, delta_tick);
+#endif
 
     if (delta_tick)
     {
         /* adjust OS tick */
         rt_tick_set(rt_tick_get() + delta_tick);
+        GLOBAL_INT_RESTORE();
         /* check system timer */
         rt_timer_check();
     }
-#endif
+    else
+    {
+        GLOBAL_INT_RESTORE();
+    }
 
     rt_exit_critical();
 }

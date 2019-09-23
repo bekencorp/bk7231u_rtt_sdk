@@ -1307,12 +1307,13 @@ int bk_wlan_set_channel(int channel)
 	g_set_channel_postpone_num = channel;
 	GLOBAL_INT_RESTORE();
 
-    CHECK_OPERATE_RF_REG_IF_IN_SLEEP();
+    CHECK_NEED_WAKE_IF_STA_IN_SLEEP();
 	ke_evt_set(KE_EVT_RESET_BIT);
-    CHECK_OPERATE_RF_REG_IF_IN_SLEEP_END();
+    CHECK_NEED_WAKE_IF_STA_IN_SLEEP_END();
     
     return 0;
 }
+
 
 /** @brief  Register the monitor callback function
  *        Once received a 802.11 packet call the registered function to return the packet.
@@ -1447,9 +1448,6 @@ int bk_wlan_dtim_rf_ps_disable_send_msg(void)
         power_save_dtim_rf_ps_disable_send_msg();
     }
 
-#if CFG_USE_MCU_PS
-    mcu_ps_machw_reset();
-#endif
     return 0;
 }
 
@@ -1520,7 +1518,7 @@ int bk_wlan_mcu_suppress_and_sleep(UINT32 sleep_ticks )
     TickType_t missed_ticks = 0;  
 	
     missed_ticks = mcu_power_save( sleep_ticks );    
-    vTaskStepTick( missed_ticks );
+    fclk_update_tick( missed_ticks );
 	#endif
 #endif
     return 0;
@@ -1780,6 +1778,22 @@ OSStatus bk_wlan_sta_is_connected(void)
     return 0;
 }
 #endif
+
+
+UINT32 if_other_mode_rf_sleep(void)
+{
+    if(!bk_wlan_has_role(VIF_AP)
+        &&!bk_wlan_has_role(VIF_MESH_POINT)
+        &&!bk_wlan_has_role(VIF_IBSS)
+        &&!bk_wlan_is_monitor_mode())
+    {
+        return 1;
+    }
+    else
+        {
+        return 0;
+    }
+}
 
 #if CFG_SUPPORT_ALIOS
 /**********************for alios*******************************/

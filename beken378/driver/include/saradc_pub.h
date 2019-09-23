@@ -33,6 +33,7 @@ typedef enum
 
 #define ADC_CONFIG_MODE_4CLK_DELAY      (0x0UL)
 #define ADC_CONFIG_MODE_8CLK_DELAY      (0x1UL)
+#define ADC_CONFIG_MODE_SHOULD_OFF      (1 << 3)
 
 typedef struct
 {
@@ -87,6 +88,7 @@ void saradc_exit(void);
 void saradc_isr(void);
 float saradc_calculate(UINT16 adc_val);
 void saradc_config_param_init(saradc_desc_t * adc_config);
+void saradc_ensure_close(void);
 
 extern saradc_calibrate_val saradc_val;
 #endif //_SARADC_PUB_H_

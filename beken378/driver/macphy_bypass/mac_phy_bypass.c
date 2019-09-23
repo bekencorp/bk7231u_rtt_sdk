@@ -15,6 +15,7 @@ UINT32 reg_140 = 0x00;
 UINT32 reg_129 = 0x00;
 UINT32 reg_132 = 0x80;
 UINT32 reg_133 = 0x00;
+UINT32 g_band = 0;
 
 #if CFG_MAC_PHY_BAPASS
 struct MPB_TypeDef mpb_regs =
@@ -103,6 +104,21 @@ void mpb_start_trx(void)
     //REG_WRITE((0x0802800 + (18 * 4)), 0x02);
 }
 
+void mpb_set_txdelay(UINT32 delay_us)
+{
+    UINT32 delay_us_value;
+
+    delay_us_value = delay_us * 30;
+
+    if(g_band == 1)
+        delay_us_value = delay_us * 60;
+
+    if(delay_us_value > 0xfffff)
+    delay_us_value = 0xfffff;
+
+    mpb_regs.r3->value = delay_us_value;
+}
+
 static UINT32 mpb_select_tx_rate(UINT32 rate)
 {
     UINT32 param = rate;
@@ -177,7 +193,8 @@ UINT32 mpb_ctrl(UINT32 cmd, void *param)
 
         case MCMD_SET_BANDWIDTH:
             reg_129 &= (~(PPDU_BANDWIDTH_MASK << PPDU_BANDWIDTH_POSI));
-            reg_129 |= (((*(UINT32*)param)&&PPDU_BANDWIDTH_MASK)<< PPDU_BANDWIDTH_POSI);  
+            reg_129 |= (((*(UINT32*)param)&&PPDU_BANDWIDTH_MASK)<< PPDU_BANDWIDTH_POSI); 
+            g_band = (*(UINT32*)param);
             break; 
 
         case MCMD_SET_GI:  //0x0: 800ns;  0x1: 400ns
@@ -206,6 +223,10 @@ UINT32 mpb_ctrl(UINT32 cmd, void *param)
             reg_133 = st.mod_format;
 			break; 
  		    }
+        
+        case MCMD_SET_TXDELAY:
+            mpb_set_txdelay(*(UINT32*)param);
+            break;
 			
 		default:
 			break;

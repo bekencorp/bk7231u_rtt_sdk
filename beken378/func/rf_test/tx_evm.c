@@ -24,11 +24,16 @@
 
 #if CFG_TX_EVM_TEST
 #define TX_2_4_G_CHANNEL_NUM            (14)
+#define EVM_MAC_PKT_CNT_UNLIMITED       (0xFFFFFFFF)
 
 UINT32 evm_mac_pkt_count = 0;
-UINT32 evm_mac_pkt_max = 500000;
+UINT32 evm_mac_pkt_max = EVM_MAC_PKT_CNT_UNLIMITED;
 UINT32 evm_channel = EVM_DEFAULT_CHANNEL;
 UINT32 evm_bandwidth = PHY_CHNL_BW_20;
+UINT32 evm_rate = HW_RATE_1MBPS;
+UINT32 evm_modul_format = FORMATMOD_NON_HT;
+UINT32 evm_guard_i_tpye = 0; // LONG_GI;
+UINT32 evm_pwr_idx = 0;
 UINT32 evm_test_via_mac_flag = 0;
 	
 struct mac_addr const evm_mac_addr = {
@@ -193,6 +198,18 @@ UINT32 evm_bypass_mac_set_rate_mformat(UINT32 ppdu_rate, UINT32 m_format)
 	return ret;
 }
 
+UINT32 evm_bypass_mac_set_txdelay(UINT32 delay_us)
+{
+	UINT32 ret, param;
+    
+    param = delay_us;
+	ret = sddev_control(MPB_DEV_NAME, MCMD_SET_TXDELAY, &param);
+
+	EVM_PRT("[EVM]tx_mode_bypass_mac_set_txdelay:%d us\r\n", param);
+
+	return ret;
+}
+
 void evm_bypass_mac_set_channel(UINT32 channel)
 {
 	channel = tx_freq_2_4_G[channel - 1];
@@ -317,8 +334,27 @@ void evm_bypass_ble_test_stop(void)
 
 void evm_via_mac_evt(int dummy)
 {
-	evm_req_tx(&evm_mac_addr);
-	evm_mac_pkt_count ++;
+    ke_evt_clear(KE_EVT_EVM_MAC_BIT);
+
+    if(evm_mac_pkt_max == EVM_MAC_PKT_CNT_UNLIMITED)
+    {
+        rtos_delay_milliseconds(10);
+        // un limited, send forever
+        evm_req_tx(&evm_mac_addr);
+    }
+    else 
+    {
+        if(evm_mac_pkt_count < evm_mac_pkt_max)
+    	{
+            evm_req_tx(&evm_mac_addr);
+        }
+        else
+        {
+            evm_test_via_mac_flag = 0;
+            EVM_PRT("[EVM]test by mac cnt to max, stop:%d\r\n", evm_mac_pkt_max);
+        }
+        evm_mac_pkt_count ++;
+    }
 }
 
 uint32_t evm_via_mac_is_start(void)
@@ -326,12 +362,14 @@ uint32_t evm_via_mac_is_start(void)
 	return evm_test_via_mac_flag;
 }
 
+void evm_via_mac_init(void)
+{
+	evm_init(evm_channel, evm_bandwidth);   
+}
+
 void evm_via_mac_begin(void)
 {
-	evm_init(evm_channel, evm_bandwidth);
-	
 	evm_test_via_mac_flag = 1;
-
 	evm_via_mac_evt(0);
 }
 
@@ -342,19 +380,16 @@ void evm_via_mac_continue(void)
 		return;
 	}
 	
-	if(evm_mac_pkt_count < evm_mac_pkt_max)
-	{
-		ke_evt_set(KE_EVT_EVM_MAC_BIT);
-	}
-	else
-	{
-		ke_evt_clear(KE_EVT_EVM_MAC_BIT);
-	}
+    ke_evt_set(KE_EVT_EVM_MAC_BIT);
 }
 
-void evm_via_mac_set_rate(HW_RATE_E rate, uint32_t is_2_4G)
+void evm_via_mac_set_rate(HW_RATE_E rate, uint32_t modul_format, uint32_t guard_i_tpye)
 {
-	txl_evm_set_hw_rate(rate, is_2_4G);
+    evm_rate = rate;
+    evm_modul_format = modul_format;
+    evm_guard_i_tpye = guard_i_tpye;
+    
+    EVM_PRT("[EVM]test by mac, rate:%d, m:%d, gi:%d\r\n", rate, modul_format, guard_i_tpye);
 }
 
 void evm_via_mac_set_channel(UINT32 channel)
@@ -363,6 +398,19 @@ void evm_via_mac_set_channel(UINT32 channel)
     evm_channel = channel;
 
 	//evm_via_mac_begin();
+}
+
+void evm_via_mac_set_power(UINT32 pwr_idx)
+{
+    evm_pwr_idx = pwr_idx;
+}
+
+void evm_via_mac_set_bandwidth(UINT32 bandwidth)
+{
+    if(bandwidth >= PHY_CHNL_BW_80)
+        return;
+
+	evm_bandwidth = bandwidth;
 }
 #endif // CFG_TX_EVM_TEST
 // eof

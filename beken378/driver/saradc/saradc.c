@@ -33,11 +33,33 @@ static DD_OPERATIONS saradc_op = {
 
 static void saradc_int_clr(void);
 
+static void saradc_flush(void)
+{
+    UINT32 value;
+
+	value = REG_READ(SARADC_ADC_CONFIG);
+    value &= ~(SARADC_ADC_MODE_MASK << SARADC_ADC_MODE_POSI);
+    value &= ~(SARADC_ADC_CHNL_EN); 
+    value |= SARADC_ADC_INT_CLR;
+	REG_WRITE(SARADC_ADC_CONFIG, value);
+
+    // clear fifo
+    value = REG_READ(SARADC_ADC_CONFIG);
+    while((value & SARADC_ADC_FIFO_EMPTY) == 0) {
+        REG_READ(SARADC_ADC_DATA);
+        value = REG_READ(SARADC_ADC_CONFIG);
+    }
+    
+    saradc_int_clr();
+}
+
 void saradc_init(void)
 {
 	intc_service_register(IRQ_SARADC, PRI_IRQ_SARADC, saradc_isr); 
 
 	ddev_register_dev(SARADC_DEV_NAME, &saradc_op);
+
+    saradc_flush();
 }
 
 void saradc_exit(void)
@@ -291,9 +313,11 @@ static void saradc_int_clr(void)
 {
 	UINT32 value;
 
-	value = REG_READ(SARADC_ADC_CONFIG);
-	value |= SARADC_ADC_INT_CLR;
-	REG_WRITE(SARADC_ADC_CONFIG, value);
+	do{
+		value = REG_READ(SARADC_ADC_CONFIG);
+		value |= SARADC_ADC_INT_CLR;
+		REG_WRITE(SARADC_ADC_CONFIG, value);
+	}while(REG_READ(SARADC_ADC_CONFIG) & SARADC_ADC_INT_CLR);
 }
 
 static UINT32 saradc_set_clk_rate(UINT8 rate)
@@ -358,9 +382,19 @@ void saradc_config_param_init(saradc_desc_t* adc_config)
     adc_config->filter = 0;
     adc_config->has_data = 0;
     adc_config->mode = (ADC_CONFIG_MODE_CONTINUE << 0)
-                      |(ADC_CONFIG_MODE_4CLK_DELAY << 2);
+                      |(ADC_CONFIG_MODE_4CLK_DELAY << 2)
+                      |(ADC_CONFIG_MODE_SHOULD_OFF);
     adc_config->pre_div = 0x10;
     adc_config->samp_rate = 0x20;
+}
+
+void saradc_ensure_close(void)
+{
+    if(saradc_desc->mode & ADC_CONFIG_MODE_SHOULD_OFF)
+    {
+        // close
+        saradc_close();
+    }
 }
 
 float saradc_calculate(UINT16 adc_val)
@@ -436,11 +470,6 @@ void saradc_isr(void)
         {
             saradc_desc->pData[saradc_desc->current_sample_data_cnt++] = dac_val;
             saradc_desc->has_data = 1;
-
-            if(saradc_desc->current_sample_data_cnt == saradc_desc->data_buff_size) 
-            {
-                saradc_close();
-            }
         }
        
         value = REG_READ(SARADC_ADC_CONFIG);

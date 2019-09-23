@@ -46,7 +46,7 @@ void tpc_update_tx_power(int8_t pwr);
  *
  * @return The idx to use in policy table to configure TX power for this vif.
  */
-uint8_t tpc_get_vif_tx_power(struct vif_info_tag *vif);
+uint8_t tpc_get_vif_tx_power(struct vif_info_tag *vif, uint32_t rate_info);
 
 /**
  * @brief Configure TX power for a specific vif

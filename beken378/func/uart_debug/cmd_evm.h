@@ -8,6 +8,8 @@ extern int do_evm(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[]);
 #define CMD_EVM_MAXARG                          10
 
 #define EVM_DEFUALT_MODE                       (1)
+#define EVM_VIAMAC_TPC_MODE                    (0)
+#define EVM_VIAMAC_NOTPC_MODE                  (2)
 #define EVM_DEFUALT_PACKET_LEN                 (1024)
 #define EVM_DEFUALT_RATE                       (54)
 #define EVM_DEFUALT_B_RATE                     (11)

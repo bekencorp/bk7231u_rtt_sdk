@@ -39,7 +39,9 @@ typedef enum {
     TXEVM_G_OPT,
     TXEVM_G_TEMP_FLASH,
     TXEVM_G_XTAL_FLASH,
-    TXEVM_G_DIFF_FLASH,    
+    TXEVM_G_DIFF_FLASH,
+    TXEVM_G_GET_SW_VER,
+    TXEVM_G_D0_SINGLE_TD,
     TXEVM_G_MAX
 } TXEVM_G_TYPE;
 
@@ -106,6 +108,7 @@ static UINT32 evm_translate_tx_rate(UINT32 rate)
 #endif
 
 /*txevm [-m mode] [-c channel] [-l packet-length] [-r physical-rate]*/
+UINT32 gmode = EVM_DEFUALT_MODE;
 int do_evm(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
 {
 #if CFG_TX_EVM_TEST
@@ -135,7 +138,9 @@ int do_evm(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
     UINT32 is_ble_test = 0;;
     UINT32 ble_test = 0;
     UINT32 reg;
+    UINT32 txdelay = 125;
     SC_TYPE_T single_carrier_type = SINGLE_CARRIER_11G;
+	int i;
 
     if(arg_cnt == 1)
         return 0;
@@ -239,6 +244,12 @@ int do_evm(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
                     else if(op == TXEVM_G_XTAL_FLASH) {
                         manual_cal_load_xtal_tag_from_flash();
                     }
+                    else if(op == TXEVM_G_D0_SINGLE_TD)
+                    {
+                        #if CFG_USE_TEMPERATURE_DETECT
+                        manual_cal_do_single_temperature();
+                        #endif
+                    }
                     #endif // #if (CFG_SOC_NAME != SOC_BK7231)
                     return 0;
                 } else {
@@ -268,7 +279,7 @@ int do_evm(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
                     arg_cnt -= 1;
                     arg_id += 1;
                     os_printf("set pwr: gain:%d, unused:%d, rate:11\r\n", ble_pwr_mod, ble_pwr_pa);
-                    rwnx_cal_set_txpwr(ble_pwr_mod, EVM_DEFUALT_B_RATE);
+                    rwnx_cal_set_txpwr(ble_pwr_mod, EVM_DEFUALT_BLE_RATE);
                     return 0;
                 }
                 else
@@ -278,7 +289,16 @@ int do_evm(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
                     arg_cnt -= 1;
                     arg_id += 1;
                     os_printf("set pwr: gain:%d, unused:%d, rate:%d\r\n", pwr_mod, pwr_pa, g_rate);
-                    rwnx_cal_set_txpwr(pwr_mod, g_rate);
+                    if((gmode == EVM_DEFUALT_MODE) || (gmode == EVM_VIAMAC_NOTPC_MODE))
+                        rwnx_cal_set_txpwr(pwr_mod, g_rate);
+                    else {
+                        #if (CFG_SOC_NAME != SOC_BK7231)
+                        pwr_mod = rwnx_tpc_pwr_idx_translate(pwr_mod, g_rate, 1);
+                        evm_via_mac_set_power(pwr_mod);
+                        #else
+                        rwnx_cal_set_txpwr(pwr_mod, g_rate);
+                        #endif
+                    }
                     return 0;
                 }
                 }
@@ -391,7 +411,8 @@ int do_evm(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
 
     /*step1, parameter check*/
     if(!(((1 == mode)
-            || (0 == mode))
+            || (0 == mode)
+            || (2 == mode))
             && ((1 == bandwidth)
                 || (0 == bandwidth))
             && (modul_format <= 3)
@@ -431,11 +452,11 @@ int do_evm(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
         reg = 5;
         sddev_control(SCTRL_DEV_NAME, CMD_SCTRL_SET_VDD_VALUE, &reg);
         
-        if(mode)
+        rwnx_cal_set_reg_adda_ldo(1);
+
+        if(mode == EVM_DEFUALT_MODE)
         {
-            #if (CFG_SOC_NAME != SOC_BK7231)
-            rwnx_cal_set_reg_adda_ldo(1);
-            #endif
+            rwnx_no_use_tpc_set_pwr();
             
             mdm_scramblerctrl_set(0x95);
             evm_bypass_mac_set_tx_data_length(modul_format, packet_len);
@@ -474,24 +495,60 @@ int do_evm(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
             }
             
         }
-        else
+        else if(mode == EVM_VIAMAC_TPC_MODE)
         {
-            evm_via_mac_set_rate((HW_RATE_E)rate, 1);
-            evm_set_bandwidth(bandwidth);
-            evm_via_mac_set_channel(channel);
+            #if (CFG_SOC_NAME != SOC_BK7231)
+            UINT32 h_rate = evm_translate_tx_rate(rate), txpwr;
 
+            evm_stop_bypass_mac();
+
+            rwnx_use_tpc_set_pwr();
+
+            evm_via_mac_set_bandwidth(bandwidth);
+            evm_via_mac_set_channel(channel);
+            evm_via_mac_init();
+            
+            evm_via_mac_set_rate((HW_RATE_E)h_rate, modul_format, guard_i_tpye);
+            
+            txpwr = rwnx_tpc_get_pwridx_by_rate(h_rate, 1);
+            evm_via_mac_set_power(txpwr);
+            
+            evm_via_mac_begin();
+            #endif
+        }
+        else if(mode == EVM_VIAMAC_NOTPC_MODE)
+        {
+            UINT32 h_rate = evm_translate_tx_rate(rate);
+
+            evm_stop_bypass_mac();
+
+            rwnx_no_use_tpc_set_pwr();
+
+            evm_via_mac_set_bandwidth(bandwidth);
+            evm_via_mac_set_channel(channel);
+            evm_via_mac_init();
+            
+            evm_via_mac_set_rate((HW_RATE_E)h_rate, modul_format, guard_i_tpye);
+
+#if CFG_SUPPORT_CALIBRATION
+            CHECK_OPERATE_RF_REG_IF_IN_SLEEP();
+            rwnx_cal_set_txpwr_by_rate(evm_translate_tx_rate(rate), test_mode);
+            CHECK_OPERATE_RF_REG_IF_IN_SLEEP_END();
+#endif
             evm_via_mac_begin();
         }
         
+        gmode = mode;
     }
     else
     {
+        #if (CFG_SOC_NAME != SOC_BK7231)
         if(ble_test)
         {
             //os_printf("ble_test\r\n");
             single_carrier_type = SINGLE_CARRIER_BLE;
             
-            rwnx_cal_set_txpwr(ble_pwr_mod, 11);
+            rwnx_cal_set_txpwr_by_channel((ble_channel - 2402) / 2);
             evm_bypass_ble_test_start(ble_channel);
             if(single_carrier)
                 evm_bypass_set_single_carrier(single_carrier_type);
@@ -500,6 +557,7 @@ int do_evm(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
         {
             evm_bypass_ble_test_stop();
         }
+        #endif
     }
     
 #endif // CFG_TX_EVM_TEST 

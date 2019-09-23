@@ -25,6 +25,11 @@
 	.globl do_irq
 	.globl do_fiq
 	.globl do_swi
+	.globl do_undefined
+	.globl do_pabort
+	.globl do_dabort
+	.globl do_reserved
+    
 /* ========================================================================
  *                                Macros
  * ======================================================================== */
@@ -253,7 +258,8 @@ _sysboot_zi_init:
 
     /* Interrupt */
         .align  5
-boot_undefined:
+do_undefined:
+    LDMFD   SP!, {R0-R1}
 	PUSH_SVC_REG
     BL rt_hw_trap_udef
 	B       .
@@ -266,22 +272,53 @@ do_swi:
 	B       .
 
         .align  5
-boot_pabort:
+do_pabort:
+    LDMFD   SP!, {R0-R1}
 	PUSH_SVC_REG
     BL rt_hw_trap_pabt
 	B       .
 
         .align  5
-boot_dabort:
+do_dabort:
+    LDMFD   SP!, {R0-R1}
 	PUSH_SVC_REG
     BL rt_hw_trap_dabt
 	B       .
 
         .align  5
-boot_reserved:
+do_reserved:
+    LDMFD   SP!, {R0-R1}
 	PUSH_SVC_REG
     BL rt_hw_trap_resv
 	B       .
+
+        .align  5
+boot_undefined:
+	STMFD  sp!,{r0-r1}
+	LDR    R1, =0x40000c
+	LDR    r0, [R1]
+	BX     r0
+
+        .align  5
+boot_pabort:
+	STMFD  sp!,{r0-r1}
+	LDR    R1, =0x400010
+	LDR    r0, [R1]
+	BX     r0
+
+        .align  5
+boot_dabort:
+	STMFD  sp!,{r0-r1}
+	LDR    R1, =0x400014
+	LDR    r0, [R1]
+	BX     r0
+
+        .align  5
+boot_reserved:
+	STMFD  sp!,{r0-r1}
+	LDR    R1, =0x400018
+	LDR    r0, [R1]
+	BX     r0
 
 
 		.align	5

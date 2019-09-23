@@ -243,7 +243,7 @@ void sctrl_flash_select_dco(void)
     ASSERT(DD_HANDLE_UNVALID != flash_hdl);
     ddev_control(flash_hdl, CMD_FLASH_SET_DCO, 0);
     //flash get id  shouldn't remove
-    ddev_control(flash_hdl, CMD_FLASH_GET_ID, 0);
+    ddev_control(flash_hdl, CMD_FLASH_GET_ID, &reg);
 }
 
 void sctrl_sta_ps_init(void)
@@ -355,7 +355,7 @@ void sctrl_init(void)
     #if (CFG_SOC_NAME == SOC_BK7231)
     param = 0x24006000;
     #else
-    param = 0x24026080;   // xtalh_ctune   // 24006080
+    param = 0x24006080;   // xtalh_ctune   // 24006080
     param &= ~(XTALH_CTUNE_MASK<< XTALH_CTUNE_POSI);
     param |= ((0x10&XTALH_CTUNE_MASK) << XTALH_CTUNE_POSI);
     #endif // (CFG_SOC_NAME == SOC_BK7231)
@@ -401,9 +401,6 @@ void sctrl_init(void)
     #endif // CFG_USE_AUDIO
     #endif // (CFG_SOC_NAME == SOC_BK7221U)
 
-	#if (RHINO_CONFIG_CPU_PWR_MGMT & CFG_USE_STA_PS)
-	sctrl_mcu_init();
-	#endif
 }
 
 void sctrl_exit(void)
@@ -697,8 +694,13 @@ void sctrl_rf_wakeup(void)
 void sctrl_set_rf_sleep(void)
 {
     if(power_save_if_rf_sleep() 
+        && if_other_mode_rf_sleep()
 #if CFG_USE_BLE_PS
     	&& if_ble_sleep()
+#else
+#if (CFG_SOC_NAME != SOC_BK7231)
+        &&  (!(REG_READ(SCTRL_CONTROL) & BLE_RF_EN_BIT))
+#endif
 #endif
         )
         {
@@ -1945,8 +1947,13 @@ UINT32 sctrl_ctrl(UINT32 cmd, void *param)
         reg = REG_READ(SCTRL_CONTROL);
         reg &= ~(BLE_RF_EN_BIT);
         REG_WRITE(SCTRL_CONTROL, reg);
-        break; 
-        
+        break;        
+
+	case CMD_BLE_RF_BIT_GET:
+		reg = REG_READ(SCTRL_CONTROL);
+		*((UINT32 *)param) = reg & (BLE_RF_EN_BIT);
+		break;
+		
     case CMD_EFUSE_WRITE_BYTE: 
         ret = sctrl_write_efuse(param);
         break;

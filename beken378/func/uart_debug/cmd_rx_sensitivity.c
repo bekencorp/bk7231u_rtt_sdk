@@ -20,6 +20,8 @@ beken_timer_t rx_sens_ble_tmr = {0};
 UINT32 g_rxsens_start = 0;
 #endif
 
+extern void bk7011_max_rxsens_setting(void);
+
 void rxsens_ct_hdl(void *param)
 {
 #if CFG_RX_SENSITIVITY_TEST
@@ -275,26 +277,37 @@ int do_rx_sensitivity(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
             return 1;
         } 
 
-    //sys_ctrl_0x42[6:4]=SCTRL_DIGTAL_VDD=4
-    if((mode == 0) && ((13 == channel) || (14 == channel)))
-    {
-        reg = 3;
-        sddev_control(SCTRL_DEV_NAME, CMD_SCTRL_SET_VDD_VALUE, &reg);
-    }
-    else
-    {
-        reg = 4;
-        sddev_control(SCTRL_DEV_NAME, CMD_SCTRL_SET_VDD_VALUE, &reg);
-    }
+        //sys_ctrl_0x42[6:4]=SCTRL_DIGTAL_VDD=4
+        if(mode == 0)
+        {
+            reg = 3;
+            sddev_control(SCTRL_DEV_NAME, CMD_SCTRL_SET_VDD_VALUE, &reg);
+        }
+        else
+        {
+            reg = 5;
+            sddev_control(SCTRL_DEV_NAME, CMD_SCTRL_SET_VDD_VALUE, &reg);
+        }
+        
+        rs_test();
 
-    #if (CFG_SOC_NAME != SOC_BK7231)
-    rwnx_cal_set_reg_adda_ldo(0);
-    #endif
-    
-    rs_test();
-    g_rxsens_start = 1;
+        rwnx_cal_set_reg_adda_ldo(0);
 
-    if(duration) {
+        bk7011_max_rxsens_setting();
+        
+        if(mode == 1)
+        {
+            if((channel >= 3) && (channel <= 10))
+                rwnx_cal_set_40M_extra_setting(1);
+            else
+                rwnx_cal_set_40M_extra_setting(0);
+        }
+        else
+            rwnx_cal_set_40M_extra_setting(0);
+        
+        g_rxsens_start = 1;
+
+        if(duration) {
             rx_get_rx_result_begin();
             //t_ms = fclk_from_sec_to_tick(duration);
             t_ms = duration * 1000;

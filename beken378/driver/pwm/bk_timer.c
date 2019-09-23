@@ -187,7 +187,7 @@ void bk_timer_isr(void)
 
     do
     {
-        REG_WRITE(TIMER0_2_CTL, status);
+        REG_WRITE(TIMER0_2_CTL, REG_READ(TIMER0_2_CTL) & (~(0x7 << TIMERCTLA_INT_POSI)) | status);
     }
     while(REG_READ(TIMER0_2_CTL) & status & (0x7 << TIMERCTLA_INT_POSI));
 
@@ -205,7 +205,7 @@ void bk_timer_isr(void)
 
     do
     {
-        REG_WRITE(TIMER3_5_CTL, status);
+        REG_WRITE(TIMER3_5_CTL, REG_READ(TIMER3_5_CTL) & (~(0x7 << TIMERCTLB_INT_POSI)) | status);
     }
     while(REG_READ(TIMER3_5_CTL) & status & (0x7 << TIMERCTLB_INT_POSI));
 

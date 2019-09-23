@@ -55,10 +55,12 @@ UINT32 func_init(void)
 #endif
 
 #if CFG_SUPPORT_CALIBRATION
+	UINT32 is_tab_inflash = 0;
     FUNC_PRT("[FUNC]calibration_main\r\n");
     calibration_main();
     #if CFG_SUPPORT_MANUAL_CALI
-    manual_cal_load_default_txpwr_tab(manual_cal_load_txpwr_tab_flash());
+	is_tab_inflash = manual_cal_load_txpwr_tab_flash();
+    manual_cal_load_default_txpwr_tab(is_tab_inflash);
     #endif
     #if CFG_SARADC_CALIBRATE
     manual_cal_load_adc_cali_flash();
@@ -72,6 +74,17 @@ UINT32 func_init(void)
     manual_cal_load_lpf_iq_tag_flash();
     manual_cal_load_xtal_tag_flash();
     #endif // (CFG_SOC_NAME != SOC_BK7231)
+	
+    rwnx_cal_initial_calibration();
+
+	#if CFG_SUPPORT_MANUAL_CALI
+	if (0) //(is_tab_inflash == 0)
+	{
+		manual_cal_fitting_txpwr_tab();
+		manual_cal_save_chipinfo_tab_to_flash();
+		manual_cal_save_txpwr_tab_to_flash();
+	}
+	#endif // CFG_SUPPORT_MANUAL_CALI
 #endif    
 
 #if CFG_SDIO

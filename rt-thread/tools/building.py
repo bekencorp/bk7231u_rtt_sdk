@@ -321,8 +321,6 @@ def PrepareBuilding(env, root_directory, has_libcpu=False, remove_components = [
     GenCconfigFile(env, BuildOptions)
 
     # include beken system config
-    #sys_config = os.path.join(Rtt_Root, '..', 'beken378', 'app', 'config', 'sys_config.h')
-    #BuildOptions.update(LocalOptions(sys_config))
     # define BUILD_LIB if build library
     if GetOption('buildlib'):
         AddDepend('BUILD_LIB')
@@ -659,7 +657,10 @@ def BuildLibInstallAction(target, source, env):
     for Group in Projects:
         if Group['name'] == lib_name:
             lib_name = GroupLibFullName(Group['name'], env)
-            dst_name = os.path.join(Group['path'], lib_name)
+            if Group.has_key('LIBNAME'):
+                dst_name = os.path.join(Group['path'], Group['LIBNAME'])
+            else:
+                dst_name = os.path.join(Group['path'], lib_name)
             print 'Copy %s => %s' % (lib_name, dst_name)
             do_copy_file(lib_name, dst_name)
             break

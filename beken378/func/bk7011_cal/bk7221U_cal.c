@@ -20,7 +20,7 @@
 #include "cmd_evm.h"
 #include "temp_detect_pub.h"
 #endif
-
+#include "power_save_pub.h"
 
 #define CAL_RESULT_TO_FLASH		0
 #define CAL_RESULT_FLASH_ADDR		0x000F1000UL
@@ -655,10 +655,12 @@ void delay100us(INT32 num)
 
 
 #define CAL_WR_TRXREGS(reg)    do{\
+                                    CHECK_OPERATE_RF_REG_IF_IN_SLEEP();\
                                     while(BK7011RCBEKEN.REG0x1->value & (0x1 << reg));\
                                     BK7011TRXONLY.REG##reg->value = BK7011TRX.REG##reg->value;\
                                     cal_delay(6);\
                                     while(BK7011RCBEKEN.REG0x1->value & (0x1 << reg));\
+                                    CHECK_OPERATE_RF_REG_IF_IN_SLEEP_END();\
                                 }while(0)
 
 
@@ -1620,9 +1622,12 @@ void rwnx_cal_set_txpwr_by_rate(INT32 rate, UINT32 test_mode)
 
     phy_get_channel(&info, 0);
     bandwidth = (info.info1 >> 8) & 0xff;
-    
+
+    CHECK_OPERATE_RF_REG_IF_IN_SLEEP();
 //    channel = (BK7011TRXONLY.REG0x7->bits.chin60 - 7)/5;
     channel = (BK7011TRXONLY.REG0x5->bits.chspi - 7)/5;
+    CHECK_OPERATE_RF_REG_IF_IN_SLEEP_END();
+
     if(channel > 14)
         channel = 14;    
     if(!manual_cal_get_txpwr(rwnx_cal_translate_tx_rate(rate), 
@@ -1811,6 +1816,7 @@ void rwnx_cal_set_txpwr(UINT32 pwr_gain, UINT32 grate)
         os_printf("Xtal C: %d\r\n", manual_cal_get_xtal());
     }
 
+    CHECK_OPERATE_RF_REG_IF_IN_SLEEP();
     BK7011RCBEKEN.REG0x52->bits.TXPREGAIN = gtx_pre_gain = pcfg->pregain;
     bk7011_rc_val[21] = BK7011RCBEKEN.REG0x52->value;
 
@@ -1829,16 +1835,21 @@ void rwnx_cal_set_txpwr(UINT32 pwr_gain, UINT32 grate)
     BK7011TRX.REG0xC->bits.dgainPA30 = pcfg->regc_8_11; 
     CAL_WR_TRXREGS(0xC);
     bk7011_trx_val[12] = BK7011TRXONLY.REG0xC->value ;    
+    CHECK_OPERATE_RF_REG_IF_IN_SLEEP_END();
 }   
 
 void rwnx_cal_set_reg_mod_pa(UINT16 reg_mod, UINT16 reg_pa)
 {
+    CHECK_OPERATE_RF_REG_IF_IN_SLEEP();
+
     gtx_dcorMod = (INT32)reg_mod,
     gtx_dcorPA = (INT32)reg_pa;
     BK7011TRXONLY.REG0xB->bits.dcorMod30 = gtx_dcorMod;
     BK7011TRXONLY.REG0xC->bits.dcorPA30 = gtx_dcorPA;    
     bk7011_trx_val[11] = BK7011TRXONLY.REG0xB->value;
     bk7011_trx_val[12] = BK7011TRXONLY.REG0xC->value; 
+
+    CHECK_OPERATE_RF_REG_IF_IN_SLEEP_END();
 }
 #endif
 
@@ -5192,16 +5203,20 @@ void do_calibration_in_temp_dect(void)
 UINT32 dgainpga = 0;
 void turnoff_PA_in_temp_dect(void)
 {
+    CHECK_OPERATE_RF_REG_IF_IN_SLEEP();
     dgainpga = BK7011TRXONLY.REG0xC->bits.dgainpga;
     BK7011TRX.REG0xC->bits.dgainpga = 0;
 
     CAL_WR_TRXREGS(0xC);    
+    CHECK_OPERATE_RF_REG_IF_IN_SLEEP_END();
 }
 
 void turnon_PA_in_temp_dect(void)
 {
+    CHECK_OPERATE_RF_REG_IF_IN_SLEEP();
     BK7011TRX.REG0xC->bits.dgainpga = dgainpga;
-    CAL_WR_TRXREGS(0xC);   
+    CAL_WR_TRXREGS(0xC);
+    CHECK_OPERATE_RF_REG_IF_IN_SLEEP_END();
 }
 
 void bk7011_la_sample_print(UINT32 isrx)

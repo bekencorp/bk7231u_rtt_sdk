@@ -473,10 +473,12 @@ void delay100us(INT32 num)
 
 
 #define CAL_WR_TRXREGS(reg)    do{\
+                                    CHECK_OPERATE_RF_REG_IF_IN_SLEEP();\
                                     while(BK7011RCBEKEN.REG0x1->value & (0x1 << reg));\
                                     BK7011TRXONLY.REG##reg->value = BK7011TRX.REG##reg->value;\
                                     cal_delay(6);\
                                     while(BK7011RCBEKEN.REG0x1->value & (0x1 << reg));\
+                                    CHECK_OPERATE_RF_REG_IF_IN_SLEEP_END();\
                                 }while(0)
 
 
@@ -1071,8 +1073,11 @@ void rwnx_cal_set_txpwr_by_rate(INT32 rate, UINT32 test_mode)
 
     phy_get_channel(&info, 0);
     bandwidth = (info.info1 >> 8) & 0xff;
-    
+
+    CHECK_OPERATE_RF_REG_IF_IN_SLEEP();
     channel = (BK7011TRXONLY.REG0x7->bits.chin60 - 7)/5;
+    CHECK_OPERATE_RF_REG_IF_IN_SLEEP_END();
+
     if(channel > 14)
         channel = 14;    
     if(!manual_cal_get_txpwr(rwnx_cal_translate_tx_rate(rate), 
@@ -1091,7 +1096,8 @@ void rwnx_cal_set_txpwr_by_rate(INT32 rate, UINT32 test_mode)
     } else if(ret == 2) {
         rwnx_cal_set_txpwr(pwr_gain, EVM_DEFUALT_RATE);
     }
-    
+
+    CHECK_OPERATE_RF_REG_IF_IN_SLEEP();
     if(test_mode)
     {
         os_printf("add extral movement in test\r\n"); 
@@ -1134,10 +1140,43 @@ void rwnx_cal_set_txpwr_by_rate(INT32 rate, UINT32 test_mode)
 
         BK7011RCBEKEN.REG0x52->value = bk7011_rc_val[21];
     }
+    CHECK_OPERATE_RF_REG_IF_IN_SLEEP_END();
 #endif
 }
 
+
+void rwnx_cal_set_40M_setting(void)
+{
+    BK7011TRX.REG0x12->bits.adcrefbwsel = 1;
+    BK7011TRX.REG0x12->bits.adciselc20 = 0x4;
+    BK7011TRX.REG0x12->bits.adciselr20 = 0x4;
+    CAL_WR_TRXREGS(0x12);
+
+    BK7011TRX.REG0xD->bits.lpfrxbw = 1;
+    BK7011TRX.REG0xD->bits.lpftxbw = 1;
+    CAL_WR_TRXREGS(0xD);
+   
+    BK7011TRX.REG0xE->bits.lpfrxbw = 1;
+    BK7011TRX.REG0xE->bits.lpftxbw = 1;
+    CAL_WR_TRXREGS(0xE);
+
+    BK7011TRX.REG0x10->bits.lpfrxbw = 1;
+    BK7011TRX.REG0x10->bits.lpftxbw = 1;
+    CAL_WR_TRXREGS(0x10);
+
+    BK7011TRX.REG0xF->bits.clkdacsel = 1;
+    BK7011TRX.REG0xF->bits.clkadcsel = 1;
+    CAL_WR_TRXREGS(0xF);
+}
+
 #if CFG_SUPPORT_MANUAL_CALI
+struct cal_pwr_st {
+    UINT8 idx;
+    UINT8 mode;
+    UINT16 shift;
+};
+
+struct cal_pwr_st g_pwr_current = {16, EVM_DEFUALT_RATE, 0};
 void rwnx_cal_set_txpwr(UINT32 pwr_gain, UINT32 grate)
 {
     const PWR_REGS *pcfg;
@@ -1146,6 +1185,17 @@ void rwnx_cal_set_txpwr(UINT32 pwr_gain, UINT32 grate)
         os_printf("set_txpwr unknow pwr idx:%d \r\n", pwr_gain); 
         return;
     }
+
+    g_pwr_current.idx = pwr_gain;
+    g_pwr_current.mode = grate;
+    
+    #if CFG_USE_TEMPERATURE_DETECT
+    pwr_gain = g_pwr_current.idx + g_pwr_current.shift;
+
+    if(pwr_gain > 32) {
+        pwr_gain = 32; 
+    }
+    #endif // CFG_USE_TEMPERATURE_DETECT
 
     if(grate == EVM_DEFUALT_B_RATE) {
     // for b
@@ -1158,9 +1208,11 @@ void rwnx_cal_set_txpwr(UINT32 pwr_gain, UINT32 grate)
         return;
     }
 
-    os_printf("idx:%02d,r:%03d- pg:%02x, %01x, %01x, %01x, %01x, %01x\r\n", pwr_gain, grate,
-        pcfg->pregain, pcfg->regb_28_31, pcfg->regc_8_10,pcfg->regc_4_6, pcfg->regc_0_2, pcfg->rega_8_11);
+    if(pwr_gain > 32) {
+        pwr_gain = 32; 
+    }
 
+    CHECK_OPERATE_RF_REG_IF_IN_SLEEP();
     BK7011RCBEKEN.REG0x52->bits.TXPREGAIN = gtx_pre_gain = pcfg->pregain;
     bk7011_rc_val[21] = BK7011RCBEKEN.REG0x52->value;
 
@@ -1176,8 +1228,21 @@ void rwnx_cal_set_txpwr(UINT32 pwr_gain, UINT32 grate)
     BK7011TRX.REG0xC->bits.dgainbuf20 = pcfg->regc_4_6;
     BK7011TRX.REG0xC->bits.dgainPA20 = pcfg->regc_8_10;     
     CAL_WR_TRXREGS(0xC);
-    bk7011_trx_val[12] = BK7011TRXONLY.REG0xC->value ;    
+    bk7011_trx_val[12] = BK7011TRXONLY.REG0xC->value ;
+    CHECK_OPERATE_RF_REG_IF_IN_SLEEP_END();    
 }   
+
+#if CFG_USE_TEMPERATURE_DETECT
+void rwnx_cal_set_txpwr_by_tmpdetect(UINT16 shift)
+{
+    g_pwr_current.shift = shift;
+    if(shift)
+    {
+        os_printf("temd set pwr: idx:%d, rate:%d\r\n", g_pwr_current.idx + shift, g_pwr_current.mode);
+        rwnx_cal_set_txpwr(g_pwr_current.idx, g_pwr_current.mode);
+    }
+}  
+#endif  // CFG_USE_TEMPERATURE_DETECT
 
 void rwnx_cal_set_reg_mod_pa(UINT16 reg_mod, UINT16 reg_pa)
 {
@@ -1185,8 +1250,11 @@ void rwnx_cal_set_reg_mod_pa(UINT16 reg_mod, UINT16 reg_pa)
 
     gtx_dcorMod = (INT32)reg_mod,
     gtx_dcorPA = (INT32)reg_pa;
-    BK7011TRXONLY.REG0xB->bits.dcorMod30 = gtx_dcorMod;
-    BK7011TRXONLY.REG0xC->bits.dcorPA30 = gtx_dcorPA;    
+    BK7011TRX.REG0xB->bits.dcorMod30 = gtx_dcorMod;
+    CAL_WR_TRXREGS(0xB);
+    BK7011TRX.REG0xC->bits.dcorPA30 = gtx_dcorPA; 
+    CAL_WR_TRXREGS(0xC);
+  
     bk7011_trx_val[11] = BK7011TRXONLY.REG0xB->value;
     bk7011_trx_val[12] = BK7011TRXONLY.REG0xC->value; 
 
@@ -1203,6 +1271,7 @@ void rwnx_cal_do_temp_detect(UINT16 cur_val, UINT16 thre, UINT16 *last)
     if(tmp_pwr_ptr) 
     {
         rwnx_cal_set_reg_mod_pa(tmp_pwr_ptr->mod, tmp_pwr_ptr->pa);
+        rwnx_cal_set_txpwr_by_tmpdetect(tmp_pwr_ptr->pwr_idx_shift);
     }
 }
 #endif // CFG_USE_TEMPERATURE_DETECT
@@ -1645,13 +1714,9 @@ INT32 bk7011_cal_tx_output_power(INT32 *val)
     INT32 gold_index = 0;
     INT32 tssilow = 0;
     INT32 tssihigh = 0;
-    INT32 index;
+    INT32 index = 0;
     INT16 high, low, tx_fre_gain;
-
     INT32 cnt = 0;
-
-    //BK7011ADDAMAP.REG0x5->bits.vc40 = 0x1f;
-    //BK7011ADDA.REG0x5->value = BK7011ADDAMAP.REG0x5->value;
 
     // bk7011_rc_val[12]-16:20=7,    0x53479D40,   21 REG_0x52
     BK7011RCBEKEN.REG0x52->bits.TXPREGAIN = 7;
@@ -3721,6 +3786,11 @@ void flash_test(void)
 }
 #endif
 
+void rwnx_cal_initial_calibration(void)
+{
+    rwnx_cal_set_txpwr(16, EVM_DEFUALT_RATE);
+}
+
 void sctrl_dpll_int_open(void);
 void calibration_main(void)
 {
@@ -3891,6 +3961,61 @@ void turnon_PA_in_temp_dect(void)
     BK7011TRX.REG0xC->bits.gctrlpga20 = gctrlpga20;
     CAL_WR_TRXREGS(0xC);
     CHECK_OPERATE_RF_REG_IF_IN_SLEEP_END();
+}
+
+void rwnx_cal_set_40M_extra_setting(UINT8 val)
+{
+
+}
+
+void rwnx_cal_set_reg_adda_ldo(UINT32 val)
+{
+
+}
+
+void bk7011_max_rxsens_setting(void)
+{    
+
+}
+
+void bk7011_default_rxsens_setting(void)
+{    
+
+}
+
+UINT32 rwnx_tpc_pwr_idx_translate(UINT32 pwr_gain, UINT32 rate, UINT32 print_log)
+{
+    return pwr_gain;    
+}
+
+UINT32 rwnx_tpc_get_pwridx_by_rate(UINT32 rate, UINT32 print_log)
+{
+    return 0; 
+}
+
+void rwnx_use_tpc_set_pwr(void)
+{
+
+}
+
+void rwnx_no_use_tpc_set_pwr(void)
+{
+
+}
+
+UINT32 rwnx_is_tpc_bit_on(void)
+{
+    return 0;
+}
+
+UINT32 rwnx_sys_is_enable_hw_tpc(void)
+{
+    return 0;
+}
+
+void rwnx_tpc_pa_map_init(void)
+{
+
 }
 
 #else  /* CFG_SUPPORT_CALIBRATION */

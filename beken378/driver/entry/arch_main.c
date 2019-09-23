@@ -15,19 +15,10 @@
 #include "app.h"
 #include "ate_app.h"
 
-void entry_set_world_flag(void)
-{
-    *(volatile uint32_t *)0x00400000 = 1;
-}
-
 void entry_main(void)
 {  
     ate_app_init();
-	
-    #if CFG_SUPPORT_BOOTLOADER
-    entry_set_world_flag();
-    #endif
-    
+	    
     /* step 1: driver layer initialization*/
     driver_init();
 

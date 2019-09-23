@@ -71,7 +71,7 @@ typedef enum{
 }TXSTRUCT;
 
 #define DEFAULT_TXID_ID           (12345678)
-#define DEFAULT_TXID_THERMAL      (315)
+#define DEFAULT_TXID_THERMAL      (360)
 #define DEFAULT_TXID_CHANNEL      (22222222)
 #undef  DEFAULT_TXID_XTAL
 #define DEFAULT_TXID_XTAL         (33333333)
@@ -239,6 +239,7 @@ TXPWR_ST gtxpwr_tab_n[WLAN_2_4_G_CHANNEL_NUM];
 TXPWR_ST gtxpwr_tab_n_40[WLAN_2_4_G_CHANNEL_NUM];
 UINT32 g_dif_g_n20 = MOD_DIST_G_BW_N20;
 UINT32 g_dif_g_n40 = MOD_DIST_G_BW_N40;
+UINT32 g_cur_temp_flash = DEFAULT_TXID_THERMAL;
 UINT32 g_cur_temp = DEFAULT_TXID_THERMAL;
 
 static int manual_cal_fit_txpwr_tab_n_20(UINT32 differ);
@@ -1622,10 +1623,11 @@ load_diff:
 
 
 #if CFG_USE_TEMPERATURE_DETECT
-#define TMP_PWR_TAB_LEN             13
+#define TMP_PWR_TAB_LEN             (16 + 2)
 
 typedef struct tmp_set_pwr_st {
-    UINT16 indx;
+    UINT8 indx;
+    UINT8 flag;
     UINT16 temp_tab[TMP_PWR_TAB_LEN];
     TMP_PWR_PTR pwr_ptr;
     UINT16 init_mod;
@@ -1633,25 +1635,36 @@ typedef struct tmp_set_pwr_st {
 } TMP_SET_PWR_ST, *TMP_SET_PWR_PTR;
 
 const TMP_PWR_ST tmp_pwr_tab[TMP_PWR_TAB_LEN] = {
-    { 0,  6},   // pwr index 0   5dbm
-    { 0,  8},   // pwr index 1   6dbm
-    { 1,  8},   // pwr index 2   7dbm
-    { 2,  8},   // pwr index 3   8dbm
-    { 3,  8},   // pwr index 4   9dbm
-    { 4,  8},   // pwr index 5   10dbm
-    { 6,  8},   // pwr index 6   11bm
-    { 8,  8},   // pwr index 7   12dbm
-    {11,  8},   // pwr index 8   13dbm
-    {15,  8},   // pwr index 9   14dbm
-    {15, 10},   // pwr index 10  15dbm
-    {15, 12},   // pwr index 11  16dbm
-    {15, 15},   // pwr index 12  17dbm
+    {0x01,  8,  0},   // 0   
+    {0x02,  8,  0},   // 1   
+    {0x03,  8,  0},   // 2   
+    {0x04,  8,  0},   // 3   
+    {0x05,  8,  0},   // 4   
+    {0x06,  8,  0},   // 5   
+    {0x07,  8,  0},   // 6   
+    {0x08,  8,  0},   // 7   
+    {0x0a,  8,  0},   // 8  
+    {0x0c,  8,  0},   // 9   
+    {0x0f,  8,  0},   // 10   
+    {0x0f,  8,  1},   // 11  
+    {0x0f,  8,  2},   // 12  
+    {0x0f,  8,  3},   // 13  
+    {0x0f,  8,  4},   // 14  
+    {0x0f,  8,  5},   // 15 
+	{0x0f,  8,  6},
+	{0x0f,  8,  7}
 };
 
 TMP_SET_PWR_ST g_tmp_pwr;
 
 extern void sctrl_cali_dpll(UINT8 flag);
 extern void sctrl_dpll_int_open(void);
+
+void manual_cal_set_tmp_pwr_flag(UINT8 flag)
+{
+    os_printf("set flag to %d\r\n", flag);
+    g_tmp_pwr.flag = flag;    
+}
 
 void manual_cal_tmp_pwr_init_reg(UINT16 reg_mod, UINT16 reg_pa)
 {
@@ -1660,11 +1673,17 @@ void manual_cal_tmp_pwr_init_reg(UINT16 reg_mod, UINT16 reg_pa)
     g_tmp_pwr.init_pa = reg_pa;       
 }
 
+extern void rwnx_cal_set_txpwr_by_tmpdetect(UINT16 shift);
 void manual_cal_temp_pwr_unint(void)
 {
     os_printf("manual_cal_temp_pwr_unint: mod:%d, pa:%d\r\n", g_tmp_pwr.init_mod,
         g_tmp_pwr.init_pa);
-    rwnx_cal_set_reg_mod_pa(g_tmp_pwr.init_mod, g_tmp_pwr.init_pa);    
+    rwnx_cal_set_reg_mod_pa(g_tmp_pwr.init_mod, g_tmp_pwr.init_pa);  
+    rwnx_cal_set_txpwr_by_tmpdetect(0);
+    
+    manual_cal_set_tmp_pwr_flag(0);
+    os_printf("set flag to disable, don't do pwr any more:%d\r\n", g_tmp_pwr.flag);
+    
 }
 
 void manual_cal_tmp_pwr_init(UINT16 init_temp, UINT16 init_thre, UINT16 init_dist)
@@ -1696,11 +1715,15 @@ void manual_cal_tmp_pwr_init(UINT16 init_temp, UINT16 init_thre, UINT16 init_dis
     os_printf("init temp pwr table: mod:%d, pa:%d, tmp:%d, idx:%d, dist:%d\r\n",
         reg_mod, reg_pa, init_temp, idx, init_dist);
 
-    if(init_temp < init_dist) {
-        init_temp = ADC_TEMP_VAL_MIN;
-    } else {
-        init_temp -= init_dist;
-    }
+	if(init_temp >= ADC_TEMP_VAL_MAX)
+    {
+		os_printf("init temp too large %d, failed\r\n");
+		return;
+	}
+
+	init_temp += init_dist;
+	if(init_temp >= ADC_TEMP_VAL_MAX)
+		init_temp = ADC_TEMP_VAL_MAX;
 
     os_memset(&g_tmp_pwr.temp_tab[0], 0, sizeof(UINT16)*TMP_PWR_TAB_LEN);
     g_tmp_pwr.indx = idx;
@@ -1727,7 +1750,11 @@ void manual_cal_tmp_pwr_init(UINT16 init_temp, UINT16 init_thre, UINT16 init_dis
     }
     TMP_DETECT_WARN("\r\n");
 
-    //
+    if(temp_detect_is_init() == 0) {
+        manual_cal_set_tmp_pwr_flag(1);
+        os_printf("open set pwr flag for the first time: %d\r\n", g_tmp_pwr.flag);
+    }
+
     temp_detect_init(init_temp);
 }
 
@@ -1778,10 +1805,13 @@ TMP_PWR_PTR manual_cal_set_tmp_pwr(UINT16 cur_val, UINT16 thre, UINT16 *last)
 
     bk7011_cal_bias();
 
-    os_printf("set_tmp_pwr: indx:%d, mod:%d, pa:%d, tmp:%d\r\n", indx,
-        g_tmp_pwr.pwr_ptr->mod, g_tmp_pwr.pwr_ptr->pa, *last); 
+    if(g_tmp_pwr.flag) {
+        os_printf("set_tmp_pwr: indx:%d, mod:%d, pa:%d, tmp:%d, shift:%d\r\n", indx,
+            g_tmp_pwr.pwr_ptr->mod, g_tmp_pwr.pwr_ptr->pa, *last, g_tmp_pwr.pwr_ptr->pwr_idx_shift); 
 
-    return g_tmp_pwr.pwr_ptr;
+        return g_tmp_pwr.pwr_ptr;
+    } else
+	    return NULL;
 }
 
 UINT32 manual_cal_load_temp_tag_flash(void)

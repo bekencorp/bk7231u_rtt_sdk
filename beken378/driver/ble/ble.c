@@ -56,6 +56,12 @@ extern /*const */struct bd_addr common_default_bdaddr;
 extern void uart_isr(void);
 extern void intc_service_change_handler(UINT8 int_num, FUNCPTR isr);
 extern void wifi_get_mac_address(char *mac, u8 type);
+extern void rwnx_cal_ble_set_rfconfig(void);
+extern void rwnx_cal_ble_recover_rfconfig(void);
+extern void rwnx_cal_set_txpwr_for_ble_boardcast(void);
+extern void rwnx_cal_recover_txpwr_for_wifi(void);
+extern uint32_t get_ate_mode_state(void);
+extern void rwnx_no_use_tpc_set_pwr(void);
 
 void ble_intc_set(uint32_t enable)
 {
@@ -118,12 +124,19 @@ void ble_switch_rf_to_wifi(void)
 {
     // if in ble dut mode, no need change back to wifi any more.
     // ble dut mode can not exit until power off
-    if(ble_dut_flag)
-        return;
 
     GLOBAL_INT_DECLARATION();
     GLOBAL_INT_DISABLE();
+
+    if(!get_ate_mode_state())
+    {
+        rwnx_cal_recover_txpwr_for_wifi();
+    }
+    
+    rwnx_cal_ble_recover_rfconfig();
+    
     sddev_control(SCTRL_DEV_NAME, CMD_BLE_RF_BIT_CLR, NULL);
+    sctrl_set_rf_sleep();//after swtich wifi check if can stop rf
     GLOBAL_INT_RESTORE();
     
     //PS_DEBUG_RF_UP_TRIGER;
@@ -131,16 +144,27 @@ void ble_switch_rf_to_wifi(void)
 
 void ble_switch_rf_to_ble(void)
 {
-    UINT32 reg;
-    if(if_rf_wifi_used())
-        return;
-    
     GLOBAL_INT_DECLARATION();
     GLOBAL_INT_DISABLE();
     sddev_control(SCTRL_DEV_NAME, CMD_BLE_RF_BIT_SET, NULL);
-    GLOBAL_INT_RESTORE();
+    sctrl_rf_wakeup();//after swtich ble check if need start rf
 
-    //PS_DEBUG_RF_UP_TRIGER;
+    rwnx_cal_ble_set_rfconfig();
+    
+    if(!get_ate_mode_state())
+    {
+        rwnx_cal_set_txpwr_for_ble_boardcast();
+    }
+    GLOBAL_INT_RESTORE();
+}
+
+uint8 is_rf_switch_to_ble(void)
+{
+    UINT32 param;
+    
+    sddev_control(SCTRL_DEV_NAME, CMD_BLE_RF_BIT_GET, &param);
+
+    return (param > 0 ) ? 1 : 0;
 }
 
 void ble_request_rf_by_isr(void)
@@ -310,12 +334,13 @@ static void ble_main( void *arg )
     memcpy(&common_default_bdaddr, &ble_cfg.mac, sizeof(struct bd_addr));
     memcpy(&app_dflt_dev_name, &ble_cfg.name, APP_DEVICE_NAME_LENGTH_MAX); 
 
-    if(!ble_dut_flag)
     {
         UINT8 *mac = (UINT8 *)&ble_cfg.mac;
-        
-        os_printf("ble name:%s, %02x:%02x:%02x:%02x:%02x:%02x\r\n", 
-            app_dflt_dev_name, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+        if(!ble_dut_flag)
+            os_printf("ble name:%s, %02x:%02x:%02x:%02x:%02x:%02x\r\n", 
+                app_dflt_dev_name, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+        else
+            os_printf("enter ble dut\r\n");
     }
     ble_flag = 1;
 	rw_main();
@@ -515,8 +540,12 @@ void ble_dut_start(void)
     {
         ble_dut_flag = 1;
 
-        os_printf("enter ble dut\r\n");
+        //os_printf("ble_dut\r\n");
         
+        //rwnx_cal_set_txpwr(1, 11);
+        rwnx_no_use_tpc_set_pwr();
+        ble_switch_rf_to_ble();
+
         intc_service_change_handler(IRQ_UART2, uart_isr);    
         
         ble_activate(NULL);
@@ -594,5 +623,10 @@ void ble_set_role_mode(ble_role_t role)
 ble_role_t ble_get_role_mode()
 {
     return ble_role_mode;
+}
+
+UINT32 ble_in_dut_mode(void)
+{
+    return (ble_dut_flag == 1)  ? 1 :  0;
 }
 

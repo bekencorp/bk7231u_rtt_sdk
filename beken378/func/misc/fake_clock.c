@@ -61,7 +61,7 @@ void fclk_hdl(UINT8 param)
 #endif
 }
 
-UINT32 fclk_update_tick(UINT32 tick)
+static UINT32 fclk_freertos_update_tick(UINT32 tick)
 {
     current_clock += tick;
 
@@ -84,14 +84,46 @@ UINT32 fclk_update_tick(UINT32 tick)
     return 0;
 }
 
-UINT32 fclk_get_tick(void)
+UINT32 fclk_update_tick(UINT32 tick)
+{
+#if (CFG_SUPPORT_RTT)
+    rtt_update_tick(tick);
+#elif (CFG_SUPPORT_ALIOS)
+    krhino_update_sys_tick((UINT64)tick);
+#else
+    fclk_freertos_update_tick(tick);
+    vTaskStepTick( tick );
+#endif
+    return 0;
+}
+
+UINT32 fclk_freertos_get_tick(void)
 {
     return current_clock;
 }
 
+UINT64 fclk_get_tick(void)
+{
+    UINT64 fclk;
+#if (CFG_SUPPORT_RTT)
+    fclk = (UINT64)rt_tick_get();
+#elif (CFG_SUPPORT_ALIOS)
+    fclk = krhino_sys_tick_get();
+#else
+    fclk = (UINT64)fclk_freertos_get_tick();
+#endif
+    return fclk;
+}
+
 UINT32 fclk_get_second(void)
 {
+#if (CFG_SUPPORT_RTT)
+    return (rt_tick_get()/FCLK_SECOND);
+#elif (CFG_SUPPORT_ALIOS)
+    return (krhino_sys_tick_get()/FCLK_SECOND);
+#else
     return current_seconds;
+#endif
 }
 
 UINT32 fclk_from_sec_to_tick(UINT32 sec)

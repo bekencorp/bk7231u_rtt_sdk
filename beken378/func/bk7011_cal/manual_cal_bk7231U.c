@@ -304,46 +304,46 @@ const TXPWR_ST gtxpwr_tab_def_n_40[WLAN_2_4_G_CHANNEL_NUM] = {
 };    
 #endif // (CFG_SOC_NAME == SOC_BK7231)
 const TXPWR_ST gtxpwr_tab_def_ble[BLE_2_4_G_CHANNEL_NUM] = {  
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),  // ch1 2402  inused 
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),  // ch2 2404
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),  // ch5 2410
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),  // ch10 2420
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_INUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),  // ch15 2430
+    INIT_TXPWR_VALUE(20, TXPWR_ELEM_UNUSED),  // ch0 2402  inused 
+    INIT_TXPWR_VALUE(20, TXPWR_ELEM_UNUSED),  // ch1 2404
+    INIT_TXPWR_VALUE(20, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(20, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(20, TXPWR_ELEM_UNUSED),  // ch4 2410
+    INIT_TXPWR_VALUE(19, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(19, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(19, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(19, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(19, TXPWR_ELEM_UNUSED),  // ch9 2420
     INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
     INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
     INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
     INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),  // ch20 2440 inused
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),  // ch25 2450
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),  // ch30 2460
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),  // ch35 2470
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),
-    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),  // ch40 2480 inused
+    INIT_TXPWR_VALUE(18, TXPWR_ELEM_UNUSED),  // ch14 2430
+    INIT_TXPWR_VALUE(17, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(17, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(17, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(17, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(16, TXPWR_ELEM_INUSED),  // ch19 2440 inused
+    INIT_TXPWR_VALUE(16, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(16, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(16, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(16, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(16, TXPWR_ELEM_UNUSED),  // ch24 2450
+    INIT_TXPWR_VALUE(16, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(16, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(16, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(16, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(16, TXPWR_ELEM_UNUSED),  // ch29 2460
+    INIT_TXPWR_VALUE(16, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(16, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(16, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(16, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(16, TXPWR_ELEM_UNUSED),  // ch34 2470
+    INIT_TXPWR_VALUE(16, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(16, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(16, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(16, TXPWR_ELEM_UNUSED),
+    INIT_TXPWR_VALUE(16, TXPWR_ELEM_UNUSED),  // ch39 2480 inused
  };
 #endif
 
@@ -359,9 +359,23 @@ UINT32 g_cur_temp_flash = DEFAULT_TXID_THERMAL;
 UINT32 g_lpf_cal_i = DEFAULT_TXID_LPF_CAP_I, g_lpf_cal_q = DEFAULT_TXID_LPF_CAP_Q;
 UINT32 g_xtal = DEFAULT_TXID_XTAL;
 
+#if (CFG_TEMP_DETECT_VERSION == CFG_TEMP_DETECT_VERSION1)
+typedef struct xtal_cali_st 
+{
+	INT8 xtal_c_delta;
+	INT16 init_xtal;
+	INT16 last_xtal;
+} XTAL_CALI_ST, *XTAL_CALI_PTR;
+
+XTAL_CALI_ST g_xcali = {0};
+#endif
+
+extern UINT32 ble_in_dut_mode(void);
+extern uint8 is_rf_switch_to_ble(void);
 static int manual_cal_fit_txpwr_tab_n_20(UINT32 differ);
 static int manual_cal_fit_txpwr_tab_n_40(UINT32 differ);
 static void manual_cal_adjust_fitting(TXPWR_PTR ptr, UINT16 dist);
+extern void manual_cal_init_xtal_cali(UINT16 init_temp, UINT16 init_xtal);
 
 void manual_cal_save_txpwr(UINT32 rate, UINT32 channel, UINT32 pwr_gain)
 {
@@ -424,9 +438,10 @@ const UINT16 shift_tab_n[1] = {0}; // for MCS7
 #else
 const UINT16 shift_tab_b[4] = {0, 0, 0, 0}; // 11M base,5.5M,2M,1M
 // 54M base -                 54M,48M,36M,24M,18M,12M,9M,6M
-const UINT16 shift_tab_g[8] = {0,  1,  1,  2,  4,  4,  4, 4}; // 54M base -  12M,9M,6M
-const UINT16 shift_tab_n20[8] = {0, 1, 1, 2, 4, 6, 6, 6}; // n20 mcs7base -  mcs0
-const UINT16 shift_tab_n40[8] = {0, 1, 1, 2, 4, 6, 6, 6}; // n40 mcs7base -  mcs0
+const UINT16 shift_tab_g[8] = {0,  1,  1,  1,  2,  2,  4, 4}; // 54M base -  12M,9M,6M
+const UINT16 shift_tab_n20[8] = {0, 1, 1, 2, 2, 4, 4, 4};; // n20 mcs7base -  mcs0
+
+const UINT16 shift_tab_n40[8] = {0, 1, 1, 2, 2, 4, 4, 4}; // n40 mcs7base -  mcs0
 #endif
 
 #define PWR_INIT_VAL        17
@@ -598,12 +613,12 @@ int manual_cal_get_txpwr(UINT32 rate, UINT32 channel, UINT32 bandwidth, UINT32 *
     }
 
     *pwr_gain = GET_TXPWR_GAIN(txpwr_tab_ptr);
-     //MCAL_PRT("get txpwrtab gain:%d,ch:%d\r\n", *pwr_gain, channel+1); remove for midea
+     //MCAL_PRT("get txpwrtab gain:%d,ch:%d\r\n", *pwr_gain, channel+1); ///remove for midea
 	 
      return 1;
 }
 
-
+extern INT32 gtx_tssi_thred;
 void manual_cal_show_txpwr_tab(void)
 {
     TXPWR_PTR txpwr_tab_ptr = NULL;
@@ -645,11 +660,15 @@ void manual_cal_show_txpwr_tab(void)
     for(i=0; i<BLE_2_4_G_CHANNEL_NUM; i++) {
         txpwr_tab_ptr = &gtxpwr_tab_ble[i];
         MCAL_PRT("ch:%2d: value:%02x, flag:%01d, gain:%02d\r\n", 
-            i+1, txpwr_tab_ptr->value, 
+            i, txpwr_tab_ptr->value, 
             GET_TXPWR_FLAG(txpwr_tab_ptr), GET_TXPWR_GAIN(txpwr_tab_ptr));
     }
 
-    MCAL_PRT("\r\n sys temper:%d\r\n", g_cur_temp);
+    MCAL_PRT("\r\nsys temper:%d\r\n", g_cur_temp);
+    MCAL_PRT("sys xtal:%d\r\n", g_xtal);
+    MCAL_PRT("TSSI:%d\r\n", gtx_tssi_thred);
+	
+    bk7011_cal_dcormod_show();
 }
 
 TXPWR_IS_RD manual_cal_txpwr_tab_is_fitted(void)
@@ -858,13 +877,13 @@ UINT32 manual_cal_fitting_txpwr_tab(void)
 
     // for ble
     tab_ptr = gtxpwr_tab_ble;
-    if((GET_TXPWR_FLAG(&tab_ptr[0]) == TXPWR_ELEM_INUSED)       // ch1
-      ||(GET_TXPWR_FLAG(&tab_ptr[19]) == TXPWR_ELEM_UNUSED)     // ch20
-      ||(GET_TXPWR_FLAG(&tab_ptr[39]) == TXPWR_ELEM_UNUSED) )  // ch40
+    if((GET_TXPWR_FLAG(&tab_ptr[0]) == TXPWR_ELEM_INUSED)       // ch0
+      ||(GET_TXPWR_FLAG(&tab_ptr[19]) == TXPWR_ELEM_INUSED)     // ch19
+      ||(GET_TXPWR_FLAG(&tab_ptr[39]) == TXPWR_ELEM_INUSED) )  // ch39
     {  
         UINT32 flag = 0;
         TXPWR_PTR base = NULL;
-        MCAL_WARN("txpwr table for ble ch1/20/40 inused\r\n");
+        MCAL_WARN("txpwr table for ble ch0/19/39 inused\r\n");
 
         if(GET_TXPWR_FLAG(&tab_ptr[0]) == TXPWR_ELEM_INUSED)
         {
@@ -881,32 +900,99 @@ UINT32 manual_cal_fitting_txpwr_tab(void)
             flag |= 0x04;
             base = &tab_ptr[39];
         }
-
+        printf("0x%x\r\n", flag);
         if(flag != 0x7)
         {
-            for(i=0; i<BLE_2_4_G_CHANNEL_NUM; i++) {
-                os_memcpy(&tab_ptr[i], base, sizeof(TXPWR_ST));
-                SET_TXPWR_FLAG(&tab_ptr[i], TXPWR_ELEM_UNUSED);
+            // only ch19 do fit
+            if(flag == 0x02)
+            {
+                // ch0 = ch19 + 4
+                TXPWR_PTR ptr;
+                base = &tab_ptr[19];
+                ptr = &tab_ptr[0];
+                SET_TXPWR_GAIN(ptr, GET_TXPWR_GAIN(base) + 4);
+                SET_TXPWR_FLAG(ptr, TXPWR_ELEM_INUSED);
+
+                // fitting ch10, use ch0, ch19 
+                manual_cal_do_fitting(&tab_ptr[10], &tab_ptr[0], &tab_ptr[19]);
+
+                // fitting ch5, use ch0, ch10 
+                manual_cal_do_fitting(&tab_ptr[5], &tab_ptr[0], &tab_ptr[10]);
+
+                // fitting ch15, use ch10, ch19 
+                manual_cal_do_fitting(&tab_ptr[15], &tab_ptr[10], &tab_ptr[19]);
+                for(i=0; i<BLE_2_4_G_CHANNEL_NUM; i++) {
+                    if(i == 0)
+                        base = &tab_ptr[0];
+                    else if(i == 5)
+                        base = &tab_ptr[5];
+                    else if(i == 10)
+                        base = &tab_ptr[10];
+                    else if(i == 15)
+                        base = &tab_ptr[15];
+                    else if(i == 19) {
+                        base = &tab_ptr[19];
+                        continue;
+                    }
+                    
+                    // ch19 -ch39 are same with ch20
+                    os_memcpy(&tab_ptr[i], base, sizeof(TXPWR_ST));
+                    SET_TXPWR_FLAG(&tab_ptr[i], TXPWR_ELEM_UNUSED);
+                }            
+            }
+            else
+            {
+                // clear flag to default set
+                TXPWR_PTR ptr = &tab_ptr[0];
+                SET_TXPWR_FLAG(ptr, TXPWR_ELEM_UNUSED);
+
+                ptr = &tab_ptr[19];
+                SET_TXPWR_FLAG(ptr, TXPWR_ELEM_INUSED);
+
+                ptr = &tab_ptr[39];
+                SET_TXPWR_FLAG(ptr, TXPWR_ELEM_UNUSED);
             }
         }
         else
         {
             int start, end;
-            // fitting ch11, use ch1, ch20 
+            // fitting ch10, use ch0, ch19 
             manual_cal_do_fitting(&tab_ptr[10], &tab_ptr[0], &tab_ptr[19]);
+
+            // fitting ch5, use ch0, ch10 
+            manual_cal_do_fitting(&tab_ptr[5], &tab_ptr[0], &tab_ptr[10]);
+
+            // fitting ch15, use ch10, ch19 
+            manual_cal_do_fitting(&tab_ptr[15], &tab_ptr[10], &tab_ptr[19]);
             
-            // fitting ch31, use ch20, ch40 
+            // fitting ch30, use ch19, ch39 
             manual_cal_do_fitting(&tab_ptr[30], &tab_ptr[19], &tab_ptr[39]);
+
+            // fitting ch25, use ch19, ch30 
+            manual_cal_do_fitting(&tab_ptr[25], &tab_ptr[19], &tab_ptr[30]);
+
+            // fitting ch35, use ch30, ch39 
+            manual_cal_do_fitting(&tab_ptr[35], &tab_ptr[30], &tab_ptr[39]);
 
             for(i=0; i<BLE_2_4_G_CHANNEL_NUM; i++) {
                 if(i == 0)
                     base = &tab_ptr[0];
+                else if(i == 5)
+                    base = &tab_ptr[5];
                 else if(i == 10)
                     base = &tab_ptr[10];
-                else if(i == 19)
+                else if(i == 15)
+                    base = &tab_ptr[15];
+                else if(i == 19) {
                     base = &tab_ptr[19];
+                    continue;
+                }
+                else if(i == 25)
+                    base = &tab_ptr[25];
                 else if(i == 30)
                     base = &tab_ptr[30];
+                else if(i == 35)
+                    base = &tab_ptr[35];
                 else if(i == 39)
                     base = &tab_ptr[39];
                 
@@ -917,7 +1003,7 @@ UINT32 manual_cal_fitting_txpwr_tab(void)
     }
     else
     {
-        MCAL_WARN("txpwr table ble ch1/20/40 none one unused, use def\r\n");
+        MCAL_WARN("txpwr table ble ch0/19/39 none one unused, use def\r\n");
     }
 
     return ret;
@@ -1907,7 +1993,7 @@ void manual_cal_set_xtal(UINT32 xtal)
 
 UINT32 manual_cal_get_xtal(void)
 {   
-   return g_xtal;
+   return g_xcali.last_xtal;
 }
 
 void manual_cal_set_lpf_iq(UINT32 lpf_i, UINT32 lpf_q)
@@ -2050,7 +2136,17 @@ void manual_cal_load_xtal_tag_flash(void)
 {
     g_xtal = manual_cal_load_xtal_tag_from_flash();
     manual_cal_set_xtal(g_xtal);
+#if CFG_USE_TEMPERATURE_DETECT
+	manual_cal_init_xtal_cali(g_cur_temp, g_xtal);
+#endif
 }
+
+#if CFG_TEMP_DETECT_VERSION == CFG_TEMP_DETECT_VERSION1
+void manual_cal_do_xtal_temp_delta_set(INT8 shift)
+{
+	 g_xcali.xtal_c_delta = shift;
+}
+#endif
 
 int manual_cal_load_temp_tag_from_flash(void)
 {
@@ -2090,6 +2186,56 @@ init_temp:
 
 
 #if CFG_USE_TEMPERATURE_DETECT
+
+#if CFG_TEMP_DETECT_VERSION == CFG_TEMP_DETECT_VERSION1
+#define TMP_PWR_TAB_LEN             34
+
+typedef struct tmp_set_pwr_st {
+    UINT8 indx;
+    UINT8 flag;
+    UINT16 temp_tab[TMP_PWR_TAB_LEN];
+    TMP_PWR_PTR pwr_ptr;
+} TMP_SET_PWR_ST, *TMP_SET_PWR_PTR;
+
+const TMP_PWR_ST tmp_pwr_tab[TMP_PWR_TAB_LEN] = {
+//trx0x0c[12:15], shift_b, shift_g, shift_ble, xtal_c_dlta
+    {  0x08,        -4,      -4,       0,         5},   // 0     ,-15
+    {  0x08,        -4,      -4,       0,         5},   // 1     ,-10
+    {  0x08,        -3,      -3,       0,         5},   // 2     ,-5
+    {  0x08,        -3,      -3,       0,         5},   // 3     ,0
+    {  0x08,        -3,      -3,       0,         5},   // 4     ,5
+    {  0x08,        -2,      -2,       0,         5},   // 5     ,10
+    {  0x08,        -2,      -2,       0,         5},   // 6     ,15
+    {  0x08,        -2,      -2,       0,         4},   // 7     ,20
+    {  0x08,        -1,      -1,       0,         3},   // 8     ,25 
+    {  0x08,        -1,      -1,       0,         2},   // 9     ,30 
+    {  0x08,        -1,      -1,       0,         1},   // 10    ,35  
+    {  0x08,        0,       0,        0,         0},   // 11    ,40 
+    {  0x08,        0,       0,        0,         0},   // 12    ,45 
+    {  0x08,        0,       0,        0,         0},   // 13    ,50 
+    {  0x08,        0,       0,        0,         0},   // 14    ,55 
+    {  0x08,        0,       0,        0,         0},   // 15    ,60 
+    {  0x08,        0,       0,        0,         0},   // 16    ,65 
+    {  0x08,        0,       0,        0,         0},   // 17    ,70 
+    {  0x08,        0,       0,        0,         0},   // 18    ,75 
+    {  0x08,        0,       0,        0,         0},   // 19    ,80 
+    {  0x08,        0,       0,        0,         0},   // 20    ,85 
+    {  0x08,        0,       0,        0,         0},   // 21    ,90 
+    {  0x08,        0,       0,        0,         5},   // 22    ,95 
+    {  0x08,        0,       0,        0,         8},   // 23    ,100
+    {  0x08,        0,       0,        0,        11},   // 24    ,105
+    {  0x08,        0,       0,        0,        16},   // 25    ,110
+    {  0x08,        0,       0,        0,        22},   // 26    ,115
+    {  0x08,        0,       0,        0,        30},   // 27    ,120
+    {  0x08,        0,       0,        0,        40},   // 28    ,125
+    {  0x08,        0,       0,        0,        52},   // 29    ,130
+    {  0x08,        0,       0,        0,        63},   // 30    ,135
+    {  0x08,        0,       0,        0,        63},   // 31    ,140
+    {  0x08,        0,       0,        0,        63},   // 32    ,145
+    {  0x08,        0,       0,        0,        63},   // 33    ,150    
+};
+#else
+
 #define TMP_PWR_TAB_LEN             13
 
 typedef struct tmp_set_pwr_st {
@@ -2133,7 +2279,7 @@ const TMP_PWR_ST tmp_pwr_tab[TMP_PWR_TAB_LEN] = {
     { 11, 8},   // pwr index 11  16dbm
     { 11, 8},   // pwr index 12  17dbm
 };
-
+#endif
 
 typedef struct xtal_st {
     UINT8 low;
@@ -2160,30 +2306,158 @@ TMP_SET_PWR_ST g_tmp_pwr;
 extern void sctrl_cali_dpll(UINT8 flag);
 extern void sctrl_dpll_int_open(void);
 
+void manual_cal_init_xtal_cali(UINT16 init_temp, UINT16 init_xtal)
+{
+#if (CFG_TEMP_DETECT_VERSION == CFG_TEMP_DETECT_VERSION1)
+	g_xcali.init_xtal = init_xtal;
+	g_xcali.last_xtal = init_xtal;
+	os_printf("--init_xtal = %d\n",init_xtal);
+#endif
+}
+
+
 void manual_cal_set_tmp_pwr_flag(UINT8 flag)
 {
-    os_printf("set flag to %d\r\n", flag);
+    os_null_printf("set flag to %d\r\n", flag);
     g_tmp_pwr.flag = flag;    
 }
 
 void manual_cal_tmp_pwr_init_reg(UINT16 reg_mod, UINT16 reg_pa)
 {
+#if CFG_TEMP_DETECT_VERSION == CFG_TEMP_DETECT_VERSION1
+
+#else
     TMP_DETECT_WARN("manual_cal_tmp_pwr_init_reg: mod:%d, pa:%d\r\n", reg_mod, reg_pa);
     g_tmp_pwr.init_mod = reg_mod;
-    g_tmp_pwr.init_pa = reg_pa;       
+    g_tmp_pwr.init_pa = reg_pa;    
+#endif
 }
 
+extern struct temp_cal_pwr_st g_temp_pwr_current;
+extern struct temp_cal_pwr_st g_temp_pwr_current_tpc;
+extern INT16 g_ble_pwr_indx, g_ble_pwr_shift;
+extern void rwnx_cal_set_txpwr_by_tmpdetect(INT16 shift_b, INT16 shift_g);
+UINT16 g_tmp_pwr_indx_bak = 255;
+void manual_cal_store_cur_temp(void)
+{
+    g_tmp_pwr_indx_bak = g_tmp_pwr.indx;
+
+    os_printf("restore g_tmp_pwr.indx:%d\r\n", g_tmp_pwr_indx_bak);
+}
+
+void manual_cal_recover_cur_temp(void)
+{
+    if(g_tmp_pwr_indx_bak == 255)
+        g_tmp_pwr.indx = g_tmp_pwr.indx;
+    else
+        g_tmp_pwr.indx = g_tmp_pwr_indx_bak;
+
+    os_printf("recover g_tmp_pwr.indx:%d\r\n", g_tmp_pwr.indx);
+}
+
+extern void rwnx_set_tpc_txpwr_by_tmpdetect(INT16 shift_b, INT16 shift_g);
+extern void rwnx_cal_set_ble_txpwr_by_tmpdetect(INT16 shift_ble);
 void manual_cal_temp_pwr_unint(void)
 {
+#if CFG_TEMP_DETECT_VERSION == CFG_TEMP_DETECT_VERSION1
+    rwnx_cal_set_txpwr_by_tmpdetect(0, 0);
+    rwnx_set_tpc_txpwr_by_tmpdetect(0, 0);
+    rwnx_cal_set_ble_txpwr_by_tmpdetect(0);
+
+	manual_cal_do_xtal_temp_delta_set(0);
+    manual_cal_do_xtal_cali(0, 0, 0, 0);
+
+    os_printf("stop pwr info:     pwridx:%d, shift_b:%d, shift_g:%d, rate:%d\r\n", 
+        g_temp_pwr_current.idx,
+        g_temp_pwr_current.shift,
+        g_temp_pwr_current.shift_g, 
+        g_temp_pwr_current.mode);
+
+    os_printf("stop pwr tpc info: pwridx:%d, shift_b:%d, shift_g:%d, rate:%d\r\n", 
+        g_temp_pwr_current_tpc.idx,
+        g_temp_pwr_current_tpc.shift,
+        g_temp_pwr_current_tpc.shift_g, 
+        g_temp_pwr_current_tpc.mode);
+
+    os_printf("stop pwr ble info: pwridx:%d, shift:%d\r\n", 
+        g_ble_pwr_indx, g_ble_pwr_shift);
+
+    bk_printf("stop td-indx:%d, tab:%d,",
+        g_tmp_pwr.indx,
+        g_tmp_pwr.temp_tab[g_tmp_pwr.indx]);
+
+    os_printf("stop xtal info: init:%d, c_delta:%d\r\n", 
+        g_xcali.init_xtal, g_xcali.xtal_c_delta);
+    
+	bk_printf("--0xc:%02x, pidx_b:%d, pidx_g:%d, X:%d\n",
+        g_tmp_pwr.pwr_ptr->trx0x0c_12_15,
+        g_tmp_pwr.pwr_ptr->p_index_delta,
+        g_tmp_pwr.pwr_ptr->p_index_delta_g,
+		g_tmp_pwr.pwr_ptr->xtal_c_dlta);
+    manual_cal_store_cur_temp();
+#else
     os_printf("manual_cal_temp_pwr_unint: mod:%d, pa:%d\r\n", g_tmp_pwr.init_mod,
         g_tmp_pwr.init_pa);
     rwnx_cal_set_reg_mod_pa(g_tmp_pwr.init_mod, g_tmp_pwr.init_pa);  
+#endif
 
     manual_cal_set_tmp_pwr_flag(0);
     os_printf("set flag to disable, don't do pwr any more:%d\r\n", g_tmp_pwr.flag);
     
 }
 
+#if CFG_TEMP_DETECT_VERSION == CFG_TEMP_DETECT_VERSION1
+void manual_cal_tmp_pwr_init(UINT16 init_temp, UINT16 init_thre, UINT16 init_dist)
+{
+	INT32 idx = 8, i;
+	INT16 temp = 0;
+	
+	os_null_printf("init temp pwr table:tmp:%d, idx:%d, dist:%d, init_thre:%d\r\n",
+		init_temp, idx, init_dist,init_thre);
+
+	if(init_temp >= ADC_TEMP_VAL_MAX)
+    {
+		os_printf("init temp too large %d, failed\r\n");
+		return;
+	}
+	
+	init_temp += init_dist;
+	if(init_temp > ADC_TEMP_VAL_MAX)
+		init_temp = ADC_TEMP_VAL_MAX;
+
+    os_memset(&g_tmp_pwr.temp_tab[0], 0, sizeof(UINT16)*TMP_PWR_TAB_LEN);
+    g_tmp_pwr.indx = idx;
+    g_tmp_pwr.pwr_ptr = (TMP_PWR_PTR)&tmp_pwr_tab[idx];
+    g_tmp_pwr.temp_tab[idx] = init_temp;
+
+    for(i=idx+1; i<TMP_PWR_TAB_LEN; i++) {
+        //temp = g_tmp_pwr.temp_tab[i-1] + ADC_TMEP_LSB_PER_10DEGREE;
+        temp = g_tmp_pwr.temp_tab[i-1] + init_thre;
+        temp = (temp > ADC_TEMP_VAL_MAX)? ADC_TEMP_VAL_MAX : temp;
+        g_tmp_pwr.temp_tab[i] = temp; 
+    }
+
+    for(i=idx-1; i>=0; i--) {
+        //temp = g_tmp_pwr.temp_tab[i+1] - ADC_TMEP_LSB_PER_10DEGREE;
+        temp = g_tmp_pwr.temp_tab[i+1] - init_thre;
+        temp = (temp < ADC_TEMP_VAL_MIN)? ADC_TEMP_VAL_MIN : temp;
+        g_tmp_pwr.temp_tab[i] = temp;
+    }
+
+    os_null_printf("Temp tab\r\n");
+    for(i=0; i<TMP_PWR_TAB_LEN; i++) {
+        os_null_printf("%02d: %03d\r\n", i, g_tmp_pwr.temp_tab[i]);
+    }
+    os_null_printf("\r\n");
+
+    if(temp_detect_is_init() == 0) {
+        manual_cal_set_tmp_pwr_flag(1);
+        os_null_printf("open set pwr flag for the first time: %d\r\n", g_tmp_pwr.flag);
+    }
+
+    temp_detect_init(init_temp);
+}
+#else
 void manual_cal_tmp_pwr_init(UINT16 init_temp, UINT16 init_thre, UINT16 init_dist)
 {
     INT32 idx = TMP_PWR_TAB_LEN-1, i;
@@ -2251,68 +2525,197 @@ void manual_cal_tmp_pwr_init(UINT16 init_temp, UINT16 init_thre, UINT16 init_dis
 
     temp_detect_init(init_temp);
 }
+#endif
 
 TMP_PWR_PTR manual_cal_set_tmp_pwr(UINT16 cur_val, UINT16 thre, UINT16 *last)
-{    
-    UINT32 dist = 0, thre_1 = (thre>>1) + 2, thre_2 = thre_1 + thre ;
-    UINT8 indx = g_tmp_pwr.indx, need_cal_dpll = 0;
+{  
+    #define DO_SETP     (10)
+    
+    UINT32 dist = 0, thre_1 = (thre>>1) + 2, thre_2 = thre_1 + (DO_SETP-1)*thre ;
+    UINT8 need_cal_dpll = 0, need_cal_bais = 0;
+    
     UINT16 last_val = g_tmp_pwr.temp_tab[g_tmp_pwr.indx];
+    UINT8 indx = g_tmp_pwr.indx;
    
     if(cur_val > last_val) 
     {
         dist = cur_val - last_val;
-        if(dist >= thre_2) 
+        if(dist >= thre_2)
         {
-            indx = (indx+2<TMP_PWR_TAB_LEN)? indx+2 : TMP_PWR_TAB_LEN-1; 
+            indx = ((indx+DO_SETP) < TMP_PWR_TAB_LEN)? (indx + DO_SETP) : TMP_PWR_TAB_LEN-1;
             need_cal_dpll = 1;
+            need_cal_bais = 1;
         }
-        else if(dist >= thre_1)
-            indx = (indx+1<TMP_PWR_TAB_LEN)? indx+1 : TMP_PWR_TAB_LEN-1;   
+        else if(dist >= thre_1) 
+        {
+            int i;
+            for(i=DO_SETP-2; i>=0; i--)
+            {
+                thre_2 = thre_1 + i*thre;
+                if(dist >= thre_2)
+                {
+                    indx = ((indx+(i+1)) < TMP_PWR_TAB_LEN)? (indx+(i+1)) : TMP_PWR_TAB_LEN-1; 
+                    break;
+                }
+            }
+
+            need_cal_bais = 1;
+            
+            if(i >= 1)
+            {
+                need_cal_dpll = 1;
+            }
+        }
     }
     else if(cur_val < last_val) 
     {
         dist = last_val - cur_val;
         if(dist >= thre_2) 
         {
-            indx = (indx>2)? indx-2:0; 
+            indx = (indx>DO_SETP)? indx-DO_SETP:0; 
             need_cal_dpll = 1;
+            need_cal_bais = 1;   
         }
         else if(dist >= thre_1) 
-            indx = (indx>1)? indx-1:0; 
+        {
+            int i;
+            for(i=DO_SETP-2; i>=0; i--)
+            {
+                thre_2 = thre_1 + i*thre;
+                if(dist >= thre_2)
+                {
+                    indx = (indx > (i+1))? (indx-(i+1)) : 0; 
+                    break;
+                }
+            }
+            
+            need_cal_bais = 1;
+            
+            if(i >= 1)
+            {
+                need_cal_dpll = 1;
+            }
+        }
     }
     
     if(g_tmp_pwr.indx == indx)
         return NULL;
     
-    g_tmp_pwr.indx = indx;
-    g_tmp_pwr.pwr_ptr = (TMP_PWR_PTR)&tmp_pwr_tab[indx];
-    *last = g_tmp_pwr.temp_tab[g_tmp_pwr.indx];
-
     if(need_cal_dpll) 
     {
-        os_printf("cal dpll!\r\n");
+        if(ble_in_dut_mode() == 0)
+            os_printf("cal dpll!\r\n");
+            
         CHECK_OPERATE_RF_REG_IF_IN_SLEEP();      
         sctrl_cali_dpll(0);
         sctrl_dpll_int_open();
         CHECK_OPERATE_RF_REG_IF_IN_SLEEP_END();
     }
 
-    os_printf("cal_bias!\r\n");
-    bk7011_cal_bias();
+    if(need_cal_bais)
+    {
+        if(ble_in_dut_mode() == 0)
+            os_printf("cal_bias!\r\n");
+        bk7011_cal_bias();
+    }
 
     // bk7231U need dist>60, then do tx pwr. 
-    if(g_tmp_pwr.flag) {
-        os_printf("set_tmp_pwr: indx:%d, mod:%d, pa:%d, tmp:%d\r\n", indx,
-            g_tmp_pwr.pwr_ptr->mod, g_tmp_pwr.pwr_ptr->pa, *last); 
+    if(g_tmp_pwr.flag) 
+    {
+        UINT8 last_idx = g_tmp_pwr.indx;
         
+        g_tmp_pwr.indx = indx;
+        g_tmp_pwr.pwr_ptr = (TMP_PWR_PTR)&tmp_pwr_tab[indx];
+        *last = g_tmp_pwr.temp_tab[g_tmp_pwr.indx];
+
+        ///os_printf("set_tmp_pwr: indx:%d, mod:%d, pa:%d, tmp:%d\r\n", indx,
+        //    g_tmp_pwr.pwr_ptr->mod, g_tmp_pwr.pwr_ptr->pa, *last); 
+        if(ble_in_dut_mode() == 0)
+        {
+            bk_printf("do td cur_t:%d--last:idx:%d,t:%d -- new:idx:%d,t:%d \r\n",
+                cur_val,
+                last_idx, g_tmp_pwr.temp_tab[last_idx],
+                g_tmp_pwr.indx, g_tmp_pwr.temp_tab[g_tmp_pwr.indx]);
+        
+    		bk_printf("--0xc:%02x, shift_b:%d, shift_g:%d, X:%d\n",
+                g_tmp_pwr.pwr_ptr->trx0x0c_12_15,
+                g_tmp_pwr.pwr_ptr->p_index_delta,
+                g_tmp_pwr.pwr_ptr->p_index_delta_g,
+    			g_tmp_pwr.pwr_ptr->xtal_c_dlta);
+        }
+		
         return g_tmp_pwr.pwr_ptr;
-    }else
+    }
+    else
+    {
+        g_tmp_pwr.indx = indx;
         return NULL;
+    }
 }
 
+void manual_cal_do_single_temperature(void)
+{   
+    UINT32 temp_value;
+    
+    if(!temp_single_get_current_temperature(&temp_value))
+    {
+        UINT32 last_value = g_cur_temp;
+        GLOBAL_INT_DECLARATION();
+        
+        GLOBAL_INT_DISABLE(); 
+        //manual_cal_tmp_pwr_init(g_cur_temp, ADC_TMEP_LSB_PER_10DEGREE * ADC_TMEP_10DEGREE_PER_DBPWR, ADC_TMEP_DIST_INTIAL_VAL);
+        manual_cal_recover_cur_temp();
+        manual_cal_set_tmp_pwr_flag(1);
+        rwnx_cal_do_temp_detect(temp_value, ADC_TMEP_LSB_PER_10DEGREE * ADC_TMEP_10DEGREE_PER_DBPWR, (UINT16 *)&last_value);
+        manual_cal_set_tmp_pwr_flag(0);
+        
+        GLOBAL_INT_RESTORE();
+
+        os_printf("std set pwr: idx:%d, shift:%d, rate:%d\r\n", 
+            g_temp_pwr_current.idx, g_temp_pwr_current.shift, 
+            g_temp_pwr_current.mode);
+
+        os_printf("std tpc set pwr: idx:%d, shift:%d, rate:%d\r\n", 
+            g_temp_pwr_current_tpc.idx, g_temp_pwr_current_tpc.shift, 
+            g_temp_pwr_current_tpc.mode);
+        
+        os_printf("std done:%0d\r\n", temp_value);
+    }
+    else
+    {
+        os_printf("std failed\r\n", temp_value);
+    }
+}
 
 void manual_cal_do_xtal_cali(UINT16 cur_val, UINT16 *last, UINT16 thre, UINT16 init_val)
 {
+    if(g_tmp_pwr.flag == 0) 
+        return;
+    
+#if CFG_TEMP_DETECT_VERSION == CFG_TEMP_DETECT_VERSION1
+	UINT32 param;
+
+	param = g_xcali.init_xtal + g_xcali.xtal_c_delta;
+    if(g_xcali.last_xtal != param) 
+    {
+        if(ble_in_dut_mode() ==0 )
+        {
+    		os_printf("init_xtal:%d, delta:%d, last_xtal:%d\r\n",
+                            g_xcali.init_xtal,
+                            g_xcali.xtal_c_delta,
+                            g_xcali.last_xtal);
+        }
+		
+        if(param > PARAM_XTALH_CTUNE_MASK)
+            param = PARAM_XTALH_CTUNE_MASK;
+        
+        sddev_control(SCTRL_DEV_NAME, CMD_SCTRL_SET_XTALH_CTUNE, &param);
+        g_xcali.last_xtal = param;
+
+        //os_printf("do_xtal_cali: c-d:%d-%d, l:%d, h:%d, v:%d\r\n", cur_val, dist, 
+        //    p_xtal->low, p_xtal->high, param); 
+    }
+#else
     INT16 dist = 0;
     XTAL_PTR p_xtal;
     UINT32 param, foud = 0;
@@ -2353,6 +2756,7 @@ void manual_cal_do_xtal_cali(UINT16 cur_val, UINT16 *last, UINT16 thre, UINT16 i
         //os_printf("do_xtal_cali: c-d:%d-%d, l:%d, h:%d, v:%d\r\n", cur_val, dist, 
         //    p_xtal->low, p_xtal->high, param); 
     }
+#endif
 }
 
 UINT32 manual_cal_load_temp_tag_flash(void)

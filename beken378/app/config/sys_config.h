@@ -1,8 +1,6 @@
 #ifndef _SYS_CONFIG_H_
 #define _SYS_CONFIG_H_
 
-#define CFG_SUPPORT_BOOTLOADER                     0
-
 /*SUMMARY: macro--1: OPEN; --0:CLOSE*/
 
 /* uart2 for debug, and generally, uart1 is used for communication.
@@ -98,7 +96,7 @@
 #define CFG_SUPPORT_CALIBRATION                    1
 #define CFG_SUPPORT_MANUAL_CALI                    1
 //tpc rf pa map power for bk7231u
-#define CFG_SUPPORT_TPC_PA_MAP                     0
+#define CFG_SUPPORT_TPC_PA_MAP                     1
 #endif
 
 /*section 8-----for netstack*/
@@ -111,7 +109,7 @@
 #define CFG_BK7221_MDM_WATCHDOG_PATCH              0
 
 /*section 11-----temperature detect*/
-#define CFG_USE_TEMPERATURE_DETECT                 0
+#define CFG_USE_TEMPERATURE_DETECT                 1
 
 /*section 12-----for SPIDMA interface*/
 #define CFG_USE_SPIDMA                             0
@@ -144,13 +142,8 @@
 #define CONFIG_APP_MP3PLAYER 			           0
 
 /*section 21 ----- support ota*/
-#if CFG_SUPPORT_BOOTLOADER
-#define CFG_SUPPORT_OTA_HTTP                       1
-#define CFG_SUPPORT_OTA_TFTP                       1
-#else
 #define CFG_SUPPORT_OTA_HTTP                       0
 #define CFG_SUPPORT_OTA_TFTP                       0
-#endif
 
 /*section 22 ----- support adc calibrate*/
 #define CFG_SARADC_CALIBRATE                       0

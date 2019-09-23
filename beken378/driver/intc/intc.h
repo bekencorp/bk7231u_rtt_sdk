@@ -29,6 +29,29 @@
 
 #define INTC_MAX_COUNT                    32
 
+
+struct arm_registers
+{
+    uint32_t r0;
+    uint32_t r1;
+    uint32_t r2;
+    uint32_t r3;
+    uint32_t r4;
+    uint32_t r5;
+    uint32_t r6;
+    uint32_t r7;
+    uint32_t r8;
+    uint32_t r9;
+    uint32_t r10;
+    uint32_t fp;
+    uint32_t ip;
+    uint32_t sp;
+    uint32_t lr;
+    uint32_t pc;
+    uint32_t cpsr;
+    uint32_t ORIG_r0;
+};
+
 typedef struct
 {
     LIST_HEADER_T list;
@@ -60,5 +83,12 @@ typedef struct
 void intc_init(void);
 void intc_irq(void);
 void intc_fiq(void);
+extern void do_irq( void );
+extern void do_fiq( void );
+extern void do_swi( void );
+extern void do_undefined( void );
+extern void do_pabort( void );
+extern void do_dabort( void );
+extern void do_reserved( void );
 
 #endif // _INTC_H_

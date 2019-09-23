@@ -23,7 +23,7 @@
 #include "lwip/ip_addr.h"
 #include "lwip/inet.h"
 
-#if CFG_SUPPORT_BOOTLOADER
+#if CFG_SUPPORT_OTA_TFTP
 extern void flash_protection_op(UINT8 mode,PROTECT_TYPE type);
 #if (CFG_SUPPORT_OTA_TFTP || CFG_SUPPORT_OTA_HTTP)
 SEND_PTK_HD send_hd, send_hd_bk;

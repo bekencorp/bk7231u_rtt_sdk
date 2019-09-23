@@ -734,13 +734,6 @@ void app_start(void)
     um_init();
 #endif
 
-#if defined(SUPPORT_MIDEA_BLE)
-    if(!get_ate_mode_state())
-    {
-	    bk_wlan_start_ble();
-    }
-#endif
-
 #ifdef CFG_ENABLE_USER_APP
     do
     {

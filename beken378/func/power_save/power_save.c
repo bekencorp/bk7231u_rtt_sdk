@@ -358,18 +358,9 @@ void power_save_mac_idle_callback(void)
 {
     if(power_save_if_sleep_first())
     {
-#if (CFG_SOC_NAME == SOC_BK7231)
         power_save_wkup_time_cal(1);
         nxmac_tsf_mgt_disable_setf(0);
         nxmac_listen_interval_setf(1);
-#else
-        nxmac_radio_wake_up_time_setf(r_wakeup_time);
-        nxmac_dtim_period_setf(bk_ps_info.ps_dtim_period);
-        delay(1);
-        nxmac_dtim_updated_by_sw_setf(1);
-        nxmac_tsf_mgt_disable_setf(0);
-        nxmac_wakeup_dtim_setf(1);
-#endif
 
         nxmac_atim_w_setf(512);
         nxmac_wake_up_sw_setf(0);
@@ -381,7 +372,6 @@ void power_save_mac_idle_callback(void)
         os_printf(" dtim period:%d multi:%d\r\n", bk_ps_info.ps_dtim_period, bk_ps_info.ps_dtim_multi);
         bk_ps_info.sleep_first = 0;
     }
-#if (CFG_SOC_NAME == SOC_BK7231)
     else
     {
         if(bk_ps_info.liston_mode == PS_LISTEN_MODE_DTIM)
@@ -408,7 +398,6 @@ void power_save_mac_idle_callback(void)
         }
 
     }
-#endif
 
     bk_ps_info.sleep_count ++;
 }
@@ -548,8 +537,6 @@ void power_save_ieee_dtim_wakeup(void)
         if(!power_save_if_sleep_first() && ps_keep_timer_period)
         {
             bmsg_ps_sender(PS_BMSG_IOCTL_RF_KP_SET);
-
-            PS_DEBUG_PWM_TRIGER;
 
         }
         else
@@ -1303,7 +1290,6 @@ void power_save_keep_timer_real_handler()
     GLOBAL_INT_DECLARATION();
 
     power_save_keep_timer_stop();
-    PS_DEBUG_PWM_TRIGER;
 
     GLOBAL_INT_DISABLE();
     if((PS_STA_DTIM_SWITCH)
@@ -1328,8 +1314,6 @@ void power_save_keep_timer_real_handler()
             ps_reseted_moniter_flag = 0;
         }
         GLOBAL_INT_RESTORE();
-        delay(1);
-        PS_DEBUG_PWM_TRIGER;
 
 #if CFG_USE_STA_PS
         extern void bmsg_null_sender(void);
@@ -1669,7 +1653,7 @@ UINT8 power_save_if_rf_sleep(void)
     }
     else
     {
-        return 1;
+        return 0;
     }
 }
 
